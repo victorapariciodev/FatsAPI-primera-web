@@ -1,3 +1,6 @@
+/* =========================================
+   ESTILOS BASE (Tu diseño original)
+   ========================================= */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -12,6 +15,7 @@ body {
     align-items: center;
     justify-content: center;
     color: #1a202c;
+    padding: 20px; /* Para que no se pegue en móviles */
 }
 
 .card {
@@ -20,20 +24,118 @@ body {
     border-radius: 16px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     text-align: center;
-    max-width: 480px;
+    max-width: 500px; /* Un poco más ancho para el formulario */
+    width: 100%;
 }
 
 .card h1 {
     font-size: 1.75rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: #000000;
 }
 
 .card p {
     margin-bottom: 1.5rem;
-    color: #000000;
+    color: #4a5568;
 }
 
+/* =========================================
+   ESTILOS DEL FORMULARIO
+   ========================================= */
+.auth-form {
+    text-align: left; /* El formulario alineado a la izquierda */
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: #2d3748;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background-color: #f8fafc;
+}
+
+input:focus {
+    outline: none;
+    border-color: #fe0000; /* Tu rojo */
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(254, 0, 0, 0.1);
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background: #e2e8f0;
+    margin: 25px 0;
+}
+
+/* =========================================
+   SELECTOR DE GÉNERO (PÍLDORAS)
+   ========================================= */
+.gender-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+/* Ocultar los radio buttons originales */
+.gender-pills input[type="radio"] {
+    display: none;
+}
+
+/* Estilo de las píldoras */
+.gender-pills label {
+    padding: 8px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85rem;
+    background-color: white;
+    color: #4a5568;
+    transition: all 0.2s;
+    margin-bottom: 0;
+    user-select: none;
+}
+
+.gender-pills label:hover {
+    background-color: #f1f5f9;
+}
+
+/* MAGIA: Cuando el radio está seleccionado, cambia su label adyacente */
+.gender-pills input[type="radio"]:checked + label {
+    background-color: #2e2f31; /* El gris oscuro de tu botón */
+    color: white;
+    border-color: #2e2f31;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* =========================================
+   BOTONES Y ALERTAS
+   ========================================= */
 .btn {
     background: #2e2f31;
     color: white;
@@ -41,10 +143,57 @@ body {
     padding: 0.75rem 1.75rem;
     border-radius: 8px;
     font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.1s;
 }
 
 .btn:hover {
     background: #a90707;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.alert-error {
+    background-color: #fed7d7;
+    color: #9b2c2c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    border: 1px solid #feb2b2;
+}
+
+.auth-footer {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.auth-footer a {
+    color: #fe0000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive para móviles */
+@media (max-width: 480px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .card {
+        padding: 1.5rem;
+    }
 }
