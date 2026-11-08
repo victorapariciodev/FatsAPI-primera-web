@@ -3,16 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ titulo }}</title>
+    <title>Mi Dashboard - FastAPI 2026</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <style>
+        /* Estilos específicos para el Dashboard */
+        .dashboard-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            padding: 20px;
+        }
 
-    <!-- ⬇️ Así se referencia el CSS en Jinja2 -->
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+        .dashboard-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-header h1 { margin: 0; font-size: 1.5rem; }
+        .user-info p { margin: 5px 0 0 0; color: #666; font-size: 0.9rem; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .data-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .data-card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            color: #2e2f31;
+        }
+
+        .data-card .data-item {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .data-card .data-item strong {
+            color: #4a5568;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .form-group-sm { margin-bottom: 12px; }
+        .form-group-sm label { font-size: 0.85rem; margin-bottom: 4px; }
+        .form-group-sm input, .form-group-sm select {
+            padding: 8px; font-size: 0.9rem; border-radius: 6px;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #2e2f31;
+            border: 2px solid #2e2f31;
+        }
+        .btn-outline:hover {
+            background: #2e2f31;
+            color: white;
+        }
+
+        .logout-btn {
+            background: #a90707;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body>
-    <div class="card">
-        <h1>{{ titulo }}</h1>
-        <p>{{ mensaje }}</p>
-        <button class="btn">Botón de ejemplo</button>
+<body style="display: block; padding: 40px 20px;">
+
+    <div class="dashboard-wrapper" style="margin: 0 auto;">
+        
+        <!-- HEADER: Datos del Usuario y Logout -->
+        <header class="dashboard-header">
+            <div class="user-info">
+                <h1>Hola, {{ user.first_name }} {{ user.last_name }} 👋</h1>
+                <p>CI: {{ user.national_id }} | Correo: {{ user.email }} | Tel: {{ user.phone_number }}</p>
+            </div>
+            <a href="/logout" class="logout-btn">Cerrar Sesión</a>
+        </header>
+
+        <div class="grid-container">
+            
+            <!-- TARJETA 1: DATOS LABORALES -->
+            <div class="data-card">
+                <h2>💼 Datos Laborales</h2>
+                {% if employment %}
+                    <!-- Si hay datos, los mostramos -->
+                    <div class="data-item"><strong>Empresa:</strong> {{ employment.company_name }}</div>
+                    <div class="data-item"><strong>Cargo:</strong> {{ employment.job_title }}</div>
+                    <div class="data-item"><strong>Sueldo:</strong> ${{ employment.salary }}</div>
+                    <div class="data-item"><strong>Dirección:</strong> {{ employment.company_address }}</div>
+                    <button class="btn btn-outline btn-sm">Editar Información</button>
+                {% else %}
+                    <!-- Si NO hay datos, mostramos el formulario -->
+                    <form action="/profile/employment" method="POST">
+                        <div class="form-group-sm">
+                            <label>Nombre de la Empresa</label>
+                            <input type="text" name="company_name" required>
+                        </div>
+                        <div class="form-group-sm">
+                            <label>Cargo / Puesto</label>
+                            <input type="text" name="job_title" required>
+                        </div>
+                        <div class="form-group-sm">
+                            <label>Sueldo Mensual ($)</label>
+                            <input type="number" step="0.01" name="salary" required>
+                        </div>
+                        <div class="form-group-sm">
+                            <label>Dirección de la Empresa</label>
+                            <input type="text" name="company_address" required>
+                        </div>
+                        <button type="submit" class="btn btn-sm">Guardar Datos Laborales</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- TARJETA 2: ESTUDIOS -->
+            <div class="data-card">
+                <h2>🎓 Estudios</h2>
+                {% if education %}
+                    <div class="data-item"><strong>Grado:</strong> {{ education.academic_degree }}</div>
+                    <div class="data-item"><strong>Carrera:</strong> {{ education.field_of_study }}</div>
+                    <div class="data-item"><strong>TCU:</strong> {{ education.tcu_status }}</div>
+                    <button class="btn btn-outline btn-sm">Editar Información</button>
+                {% else %}
+                    <form action="/profile/education" method="POST">
+                        <div class="form-group-sm">
+                            <label>Grado Académico</label>
+                            <select name="academic_degree" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Bachiller">Bachiller</option>
+                                <option value="TSU">Técnico Superior</option>
+                                <option value="Universitario">Universitario</option>
+                                <option value="Maestria">Maestría</option>
+                            </select>
+                        </div>
+                        <div class="form-group-sm">
+                            <label>Área de Estudio / Carrera</label>
+                            <input type="text" name="field_of_study" required>
+                        </div>
+                        <div class="form-group-sm">
+                            <label>Estado del TCU</label>
+                            <select name="tcu_status" required>
+                                <option value="No aplica">No aplica</option>
+                                <option value="En curso">En curso</option>
+                                <option value="Completado">Completado</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-sm">Guardar Estudios</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- TARJETA 3: DATOS BANCARIOS -->
+            <div class="data-card">
+                <h2>🏦 Datos Bancarios</h2>
+                {% if banking %}
+                    <div class="data-item"><strong>Banco:</strong> {{ banking.bank_name }}</div>
+                    <div class="data-item"><strong>Cuenta:</strong> {{ banking.account_type }}</div>
+                    <div class="data-item"><strong>Número:</strong> {{ banking.account_number }}</div>
+                    <button class="btn btn-outline btn-sm">Editar Información</button>
+                {% else %}
+                    <form action="/profile/banking" method="POST">
+                        <div class="form-group-sm">
+                            <label>Banco</label>
+                            <select name="bank_name" required>
+                                <option value="Banesco">Banesco</option>
+                                <option value="Mercantil">Mercantil</option>
+                                <option value="BDV">Banco de Venezuela</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group-sm">
+                            <label>Tipo de Cuenta</label>
+                            <select name="account_type" required>
+                                <option value="Ahorros">Ahorros</option>
+                                <option value="Corriente">Corriente</option>
+                            </select>
+                        </div>
+                        <div class="form-group-sm">
+                            <label>Número de Cuenta</label>
+                            <input type="text" name="account_number" required>
+                        </div>
+                        <button type="submit" class="btn btn-sm">Guardar Datos Bancarios</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- TARJETA 4: BONOS (Solo lectura) -->
+            <div class="data-card">
+                <h2>💰 Mis Bonos</h2>
+                {% if bonuses %}
+                    <ul style="list-style: none; padding: 0;">
+                    {% for bonus in bonuses %}
+                        <li style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                            <strong>{{ bonus.description }}</strong> <br>
+                            <span style="color: green;">+${{ bonus.amount }}</span> - <small>{{ bonus.payment_date }}</small>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="color: #718096; font-size: 0.9rem;">No tienes bonos registrados aún.</p>
+                {% endif %}
+            </div>
+
+        </div>
     </div>
+
 </body>
 </html>

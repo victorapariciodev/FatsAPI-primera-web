@@ -1,0 +1,733 @@
+<!DOCTYPE html><html class="dark" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Crear Cuenta — NIGHTKIDS</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#00f0ff',
+              container: '#00f0ff',
+              fixed: '#00f0ff'
+            },
+            on: {
+              primary: '#050b14',
+              surface: '#f1f5f9',
+              'surface-variant': '#94a3b8'
+            },
+            surface: {
+              DEFAULT: '#131319',
+              dim: '#131319',
+              bright: '#272736',
+              'container-lowest': '#0a0a0f',
+              'container-low': '#12121c',
+              'container-high': '#1e1e2d'
+            },
+            error: {
+              DEFAULT: '#ff0055',
+              container: '#ff0055'
+            },
+            secondary: {
+              DEFAULT: '#a855f7',
+              container: '#a855f7'
+            },
+            tertiary: {
+              DEFAULT: '#facc15',
+              container: '#facc15'
+            },
+            outline: {
+              variant: '#334155'
+            }
+          },
+          fontFamily: {
+            mono: ['JetBrains Mono', 'monospace'],
+            sans: ['Space Grotesk', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #08080d;
+      color: #f1f5f9;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Subtle neon scanline & grid */
+    .cyber-grid {
+      background-image: radial-gradient(rgba(0, 240, 255, 0.15) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .glow-cyan {
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
+    }
+    .glow-cyan-btn:hover {
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+    }
+    input::placeholder, textarea::placeholder {
+      color: #64748b;
+    }
+  </style>
+<meta content="web_standard" name="shell-type"></head>
+<body class="min-h-screen antialiased flex flex-col justify-between selection:bg-cyan-500/30 selection:text-cyan-200">
+<!-- Top Navigation / Shell Header -->
+<header class="w-full bg-[#0a0a0f]/90 backdrop-blur-md border-b border-surface-bright/50 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3">
+<img alt="NightKids Logo" class="h-8 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcWQRDtKOd-qCZcFzhlYUnBbGDvxCmGxkbmciPApp94XZHBOQ-bv5qwO25ZbfTqlNTpxlYmLCdFvqR03L7BnAGyn3KZ-D-_cdARqdAP6LAKY3bgAapuM3XrpC7Xt-LP12GAzQIDCzQ9cL9lFl0yFvy9Jrha7MobUqUyS5tif_PMAiTgZkeSoE0b6l_J76kEVEGvyQ_V5hehsV3J4PEzab3WJpVyA2FZr5PJ8WdwZKpWBaRMBTecGz4">
+<span class="font-bold tracking-wider text-lg font-mono text-cyan-400">NIGHTKIDS</span>
+</div>
+<span class="hidden md:inline-block text-xs font-mono text-slate-500 border-l border-slate-700 pl-3">
+        // PROTOCOL // ENROLLMENT_PORTAL
+      </span>
+</div>
+<nav class="hidden md:flex items-center gap-6 text-xs font-mono text-slate-300">
+<a class="hover:text-cyan-400 transition-colors" href="#">// Code projects</a>
+<a class="hover:text-cyan-400 transition-colors" href="#">// Timeline</a>
+<a class="hover:text-cyan-400 transition-colors" href="#">// Stream HUD</a>
+<a class="hover:text-cyan-400 transition-colors" href="#">// Repos GitHub</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2 text-xs font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 px-3 py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+<span class="">SYSTEM: ONLINE</span>
+</div>
+<a class="text-xs font-mono text-slate-300 hover:text-cyan-400 transition-colors py-1.5 px-3 rounded border border-slate-700 hover:border-cyan-500/40" href="/login">
+        INICIAR SESIÓN
+      </a>
+</div>
+</header>
+<!-- Main Container -->
+<main class="w-full flex-grow flex items-center justify-center py-10 px-4 sm:px-6 relative overflow-hidden"><div class="flex flex-col w-full">
+<!-- AMBIENT SYNTH GLOWS -->
+<div class="relative w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+<div class="absolute -top-16 left-1/4 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute top-48 right-10 w-80 h-80 bg-secondary-container/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<!-- 1. CABECERA DEL DASHBOARD: HUD IDENTITY MATRIX -->
+<section class="relative bg-surface-container-low rounded-xl p-6 sm:p-8 shadow-xl overflow-hidden mb-8">
+<!-- Top Cyber Decorator Bar -->
+<div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/40">
+<div class="flex items-center gap-3">
+<div class="flex gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-container"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+</div>
+<span class="font-status-badge text-status-badge text-primary-container tracking-widest uppercase">
+            [NK-HUD:SYS_V4.8] // UNEFA_DEV_CORE // AGENT_NODE
+          </span>
+</div>
+<div class="hidden sm:flex items-center gap-4">
+<span class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-primary-container">lock</span>
+            CIPHER: AES-256-GCM
+          </span>
+<span class="font-status-badge text-status-badge px-2 py-0.5 rounded bg-surface-container-highest text-tertiary-fixed-dim">
+            PORT: 8089 // ESTABLISHED
+          </span>
+</div>
+</div>
+<!-- Main Agent Header Info -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 flex-wrap">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+              Hola, {{ user.first_name }} {{ user.last_name }} 👋
+            </h1>
+<span class="font-status-badge text-status-badge px-3 py-1 rounded bg-secondary-container/40 text-secondary uppercase shadow-sm">
+              LEVEL 03 // FULL-STACK RUNNER
+            </span>
+</div>
+<div class="flex flex-wrap items-center gap-2 sm:gap-4 font-code-md text-code-md text-on-surface-variant">
+<span class="text-primary-container font-mono">&gt; CI: {{ user.national_id }}</span>
+<span class="text-surface-bright">•</span>
+<span class="hover:text-primary transition-colors">Correo: {{ user.email }}</span>
+<span class="text-surface-bright">•</span>
+<span class="">Tel: {{ user.phone_number }}</span>
+</div>
+</div>
+<!-- Terminal Disconnect / Emergency Terminate -->
+<div class="flex items-center gap-3">
+<a class="group inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-surface-container-highest hover:bg-error-container text-error hover:text-on-surface font-label-caps text-label-caps tracking-widest uppercase transition-all duration-300 shadow-md" href="/logout">
+<span class="material-symbols-outlined text-lg group-hover:animate-pulse">power_settings_new</span>
+<span class="">Cerrar Sesión</span>
+</a>
+</div>
+</div>
+<!-- Telemetry Sub-ribbon -->
+
+</section>
+<!-- 2. HUD PROFILE PROGRESS & QUICK FILTER BAR -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-surface-container-lowest p-4 rounded-xl shadow-lg">
+<div class="flex items-center gap-4">
+<div class="relative w-12 h-12 flex-shrink-0 flex items-center justify-center">
+<svg class="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
+<path class="text-surface-bright" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<span class="absolute font-status-badge text-status-badge text-primary-container">75%</span>
+</div>
+<div>
+<div class="font-label-caps text-label-caps text-on-surface uppercase tracking-wider">Perfil Agente NightKids</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant">3 / 4 Submódulos Sincronizados</div>
+</div>
+</div>
+<!-- Quick Nav Filter Tabs -->
+<div class="flex items-center gap-1 overflow-x-auto pb-2 md:pb-0" id="filter-tab-bar">
+<button class="tab-btn active px-3.5 py-1.5 rounded font-label-caps text-label-caps tracking-wider uppercase transition-all shadow-sm bg-primary-container text-on-primary-container" data-target="all" onclick="filterModule('all')" type="button">
+          // Vista General
+        </button>
+<button class="tab-btn px-3.5 py-1.5 rounded font-label-caps text-label-caps tracking-wider uppercase transition-all hover:text-primary-container hover:bg-surface-container-high bg-surface-container text-on-surface-variant" data-target="laboral" onclick="filterModule('laboral')" type="button">
+          Laboral
+        </button>
+<button class="tab-btn px-3.5 py-1.5 rounded font-label-caps text-label-caps tracking-wider uppercase transition-all bg-surface-container text-on-surface-variant hover:text-primary-container hover:bg-surface-container-high" data-target="academico" onclick="filterModule('academico')" type="button">
+          Académico
+        </button>
+<button class="tab-btn px-3.5 py-1.5 rounded font-label-caps text-label-caps tracking-wider uppercase transition-all bg-surface-container text-on-surface-variant hover:text-primary-container hover:bg-surface-container-high" data-target="bancario" onclick="filterModule('bancario')" type="button">
+          Bancario
+        </button>
+<button class="tab-btn px-3.5 py-1.5 rounded font-label-caps text-label-caps tracking-wider uppercase transition-all bg-surface-container text-on-surface-variant hover:text-primary-container hover:bg-surface-container-high" data-target="bonos" onclick="filterModule('bonos')" type="button">
+          Ledger Bonos
+        </button>
+</div>
+</div>
+<!-- 3. DATA REGISTRATION AND MONITORING MODULES GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+<!-- ========================================== -->
+<!-- MÓDULO 1: DATOS LABORALES                  -->
+<!-- ========================================== -->
+<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn" id="module-laboral" style="display: flex;">
+<!-- Card Header -->
+<div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/30">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-surface-container-highest flex items-center justify-center text-primary-container shadow-sm">
+<span class="material-symbols-outlined text-xl">work</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Datos Laborales</h2>
+<span class="font-status-badge text-status-badge text-outline">MOD: 01 // EMPLOYMENT_PAYLOAD</span>
+</div>
+</div>
+          {% if employment %}
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-primary-container/10 text-primary-container uppercase">
+            REGISTRADO ✓
+          </span>
+          {% else %}
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-secondary-container/20 text-secondary uppercase animate-pulse">
+            PENDIENTE !
+          </span>
+          {% endif %}
+        </div>
+
+        {% if employment %}
+        <!-- Display Readonly State -->
+<div class="flex-grow flex flex-col justify-between gap-6">
+<div class="space-y-4">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">EMPRESA / ENTIDAD:</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">{{ employment.company_name }}</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">CARGO ASIGNADO:</span>
+<span class="font-body-md text-body-md text-primary-container font-mono">{{ employment.job_title }}</span>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">SUELDO BASE MENSUAL:</span>
+<span class="font-body-md text-body-md text-tertiary-fixed font-mono font-bold">${{ employment.salary }}</span>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">DIRECCIÓN CORPORATIVA:</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">{{ employment.company_address }}</span>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded bg-surface-container-high hover:bg-surface-bright text-primary-container font-label-caps text-label-caps tracking-widest uppercase transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-base">edit</span>
+              Editar Información
+            </button>
+</div>
+</div>
+        {% else %}
+        <!-- Form Input State -->
+<form action="/profile/employment" class="flex-grow flex flex-col justify-between gap-5" method="POST">
+<div class="space-y-4">
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-primary-container font-mono">$</span> Nombre de la Empresa
+              </label>
+<input class="w-full bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md placeholder:text-outline/60 focus:outline-none focus:ring-1 focus:ring-primary-container transition-all" name="company_name" placeholder="Ej. CyberTech Corp / UNEFA Soluciones" required="" type="text">
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-primary-container font-mono">$</span> Cargo / Puesto
+                </label>
+<input class="w-full bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md placeholder:text-outline/60 focus:outline-none focus:ring-1 focus:ring-primary-container transition-all" name="job_title" placeholder="Ej. Lead Kernel Dev" required="" type="text">
+</div>
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-primary-container font-mono">$</span> Sueldo Mensual ($)
+                </label>
+<input class="w-full bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md placeholder:text-outline/60 focus:outline-none focus:ring-1 focus:ring-primary-container transition-all" name="salary" placeholder="0.00" required="" step="0.01" type="number">
+</div>
+</div>
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-primary-container font-mono">$</span> Dirección de la Empresa
+              </label>
+<input class="w-full bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md placeholder:text-outline/60 focus:outline-none focus:ring-1 focus:ring-primary-container transition-all" name="company_address" placeholder="Av. Principal, Edificio Central, Piso 4" required="" type="text">
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded bg-primary-container hover:brightness-110 text-on-primary-container font-label-caps text-label-caps tracking-widest uppercase transition-all shadow-md" type="submit">
+<span class="material-symbols-outlined text-base">save</span>
+              Guardar Datos Laborales
+            </button>
+</div>
+</form>
+        {% endif %}
+      </div>
+<!-- ========================================== -->
+<!-- MÓDULO 2: ESTUDIOS Y FORMACIÓN ACADÉMICA   -->
+<!-- ========================================== -->
+<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn" id="module-academico" style="display: flex;">
+<!-- Card Header -->
+<div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/30">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-surface-container-highest flex items-center justify-center text-secondary shadow-sm">
+<span class="material-symbols-outlined text-xl">school</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Estudios y Formación</h2>
+<span class="font-status-badge text-status-badge text-outline">MOD: 02 // ACADEMIC_CREDENTIALS</span>
+</div>
+</div>
+          {% if education %}
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-secondary-container/20 text-secondary uppercase">
+            CERTIFICADO ✓
+          </span>
+          {% else %}
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-tertiary-container/20 text-tertiary-fixed-dim uppercase animate-pulse">
+            PENDIENTE !
+          </span>
+          {% endif %}
+        </div>
+
+        {% if education %}
+        <!-- Display Readonly State -->
+<div class="flex-grow flex flex-col justify-between gap-6">
+<div class="space-y-4">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">GRADO ACADÉMICO:</span>
+<span class="font-headline-sm text-headline-sm text-secondary font-mono">{{ education.academic_degree }}</span>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">CARRERA / ÁREA DE ESTUDIO:</span>
+<span class="font-body-md text-body-md text-on-surface">{{ education.field_of_study }}</span>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex items-center justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-outline block">ESTADO DEL TCU (SERVICIO COMUNITARIO):</span>
+<span class="font-body-md text-body-md text-tertiary-container font-mono">{{ education.tcu_status }}</span>
+</div>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-2xl">verified</span>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded bg-surface-container-high hover:bg-surface-bright text-secondary font-label-caps text-label-caps tracking-widest uppercase transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-base">edit</span>
+              Editar Información
+            </button>
+</div>
+</div>
+        {% else %}
+        <!-- Form Input State -->
+<form action="/profile/education" class="flex-grow flex flex-col justify-between gap-5" method="POST">
+<div class="space-y-4">
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-secondary font-mono">&gt;</span> Grado Académico
+              </label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md focus:outline-none focus:ring-1 focus:ring-secondary transition-all pr-10" name="academic_degree" required="">
+<option class="bg-surface text-on-surface" disabled="" selected="" value="">Seleccione...</option>
+<option class="bg-surface text-on-surface" value="Bachiller">Bachiller</option>
+<option class="bg-surface text-on-surface" value="TSU">TSU</option>
+<option class="bg-surface text-on-surface" value="Universitario">Universitario</option>
+<option class="bg-surface text-on-surface" value="Maestria">Maestria</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-on-surface-variant pointer-events-none text-sm">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-secondary font-mono">&gt;</span> Área de Estudio / Carrera
+              </label>
+<input class="w-full bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md placeholder:text-outline/60 focus:outline-none focus:ring-1 focus:ring-secondary transition-all" name="field_of_study" placeholder="Ej. Ingeniería de Sistemas" required="" type="text">
+</div>
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-secondary font-mono">&gt;</span> Estado del TCU (Trabajo Comunitario)
+              </label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md focus:outline-none focus:ring-1 focus:ring-secondary transition-all pr-10" name="tcu_status" required="">
+<option class="bg-surface text-on-surface" value="No aplica">No aplica</option>
+<option class="bg-surface text-on-surface" value="En curso">En curso</option>
+<option class="bg-surface text-on-surface" value="Completado">Completado</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-on-surface-variant pointer-events-none text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded bg-secondary-container hover:brightness-110 text-on-secondary-container font-label-caps text-label-caps tracking-widest uppercase transition-all shadow-md" type="submit">
+<span class="material-symbols-outlined text-base">save</span>
+              Guardar Estudios
+            </button>
+</div>
+</form>
+        {% endif %}
+      </div>
+<!-- ========================================== -->
+<!-- MÓDULO 3: DATOS BANCARIOS                  -->
+<!-- ========================================== -->
+<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn" id="module-bancario" style="display: flex;">
+<!-- Card Header -->
+<div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/30">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-surface-container-highest flex items-center justify-center text-tertiary-fixed-dim shadow-sm">
+<span class="material-symbols-outlined text-xl">account_balance</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Datos Bancarios</h2>
+<span class="font-status-badge text-status-badge text-outline">MOD: 03 // FINANCIAL_LEDGER_ROUTE</span>
+</div>
+</div>
+          {% if banking %}
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-tertiary-container/20 text-tertiary-fixed-dim uppercase">
+            VINCULADO ✓
+          </span>
+          {% else %}
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-error-container/20 text-error uppercase animate-pulse">
+            PENDIENTE !
+          </span>
+          {% endif %}
+        </div>
+
+        {% if banking %}
+        <!-- Display Readonly State -->
+<div class="flex-grow flex flex-col justify-between gap-6">
+<div class="space-y-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">INSTITUCIÓN FINANCIERA:</span>
+<span class="font-headline-sm text-headline-sm text-tertiary-fixed font-mono">{{ banking.bank_name }}</span>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">TIPO DE INSTRUMENTO:</span>
+<span class="font-body-md text-body-md text-on-surface font-mono">{{ banking.account_type }}</span>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-outline">NÚMERO DE CUENTA COMPLETO:</span>
+<div class="flex items-center justify-between">
+<span class="font-code-lg text-code-lg text-primary-container font-mono tracking-wider">{{ banking.account_number }}</span>
+<span class="material-symbols-outlined text-sm text-outline">lock</span>
+</div>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed-dim font-label-caps text-label-caps tracking-widest uppercase transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-base">edit</span>
+              Editar Información
+            </button>
+</div>
+</div>
+        {% else %}
+        <!-- Form Input State -->
+<form action="/profile/banking" class="flex-grow flex flex-col justify-between gap-5" method="POST">
+<div class="space-y-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-tertiary-fixed font-mono">&gt;</span> Banco
+                </label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md focus:outline-none focus:ring-1 focus:ring-tertiary-container transition-all pr-10" name="bank_name" required="">
+<option class="bg-surface text-on-surface" value="Banesco">Banesco</option>
+<option class="bg-surface text-on-surface" value="Mercantil">Mercantil</option>
+<option class="bg-surface text-on-surface" value="BDV">BDV</option>
+<option class="bg-surface text-on-surface" value="Otro">Otro</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-on-surface-variant pointer-events-none text-sm">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-tertiary-fixed font-mono">&gt;</span> Tipo de Cuenta
+                </label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md focus:outline-none focus:ring-1 focus:ring-tertiary-container transition-all pr-10" name="account_type" required="">
+<option class="bg-surface text-on-surface" value="Ahorros">Ahorros</option>
+<option class="bg-surface text-on-surface" value="Corriente">Corriente</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-on-surface-variant pointer-events-none text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1.5 uppercase tracking-wider">
+<span class="text-tertiary-fixed font-mono">&gt;</span> Número de Cuenta (20 dígitos)
+              </label>
+<input class="w-full bg-surface-container-lowest border border-surface-bright/40 px-4 py-3 rounded text-on-surface font-code-md text-code-md placeholder:text-outline/60 focus:outline-none focus:ring-1 focus:ring-tertiary-container transition-all font-mono" maxlength="20" name="account_number" placeholder="01020000000000000000" required="" type="text">
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded bg-tertiary-container hover:brightness-110 text-on-tertiary-container font-label-caps text-label-caps tracking-widest uppercase transition-all shadow-md" type="submit">
+<span class="material-symbols-outlined text-base">save</span>
+              Guardar Datos Bancarios
+            </button>
+</div>
+</form>
+        {% endif %}
+      </div>
+<!-- ========================================== -->
+<!-- MÓDULO 4: MIS BONOS (LEDGER / READONLY)    -->
+<!-- ========================================== -->
+<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn" id="module-bonos" style="display: flex;">
+<!-- Card Header -->
+<div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/30">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-surface-container-highest flex items-center justify-center text-primary-container shadow-sm">
+<span class="material-symbols-outlined text-xl">payments</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Mis Bonos</h2>
+<span class="font-status-badge text-status-badge text-outline">MOD: 04 // INCENTIVE_LEDGER</span>
+</div>
+</div>
+<span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-surface-container text-on-surface-variant uppercase">
+            SOLO LECTURA
+          </span>
+</div>
+<!-- Ledger Content -->
+<div class="flex-grow flex flex-col justify-between">
+          {% if bonuses %}
+          <div class="space-y-3 overflow-y-auto max-h-[300px] pr-1">
+            {% for bonus in bonuses %}
+            <div class="bg-surface-container hover:bg-surface-container-high transition-colors p-4 rounded-lg flex items-center justify-between gap-4">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-8 h-8 rounded bg-primary-container/10 flex items-center justify-center text-primary-container flex-shrink-0">
+<span class="material-symbols-outlined text-base">check_circle</span>
+</div>
+<div class="min-w-0">
+<p class="font-body-md text-body-md text-on-surface font-medium truncate">{{ bonus.description }}</p>
+<p class="font-code-sm text-code-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">calendar_today</span>
+                    {{ bonus.payment_date }}
+                  </p>
+</div>
+</div>
+<div class="font-headline-sm text-headline-sm text-primary-container font-mono whitespace-nowrap">
+                +${{ bonus.amount }}
+              </div>
+</div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="flex-grow flex flex-col items-center justify-center py-12 text-center bg-surface-container/50 rounded-lg">
+<span class="material-symbols-outlined text-4xl text-outline mb-3">hourglass_empty</span>
+<p class="font-body-md text-body-md text-on-surface-variant font-mono">No tienes bonos registrados aún.</p>
+<p class="font-code-sm text-code-sm text-outline mt-1">// Aguardando ciclo de nómina o incentivos NightKids</p>
+</div>
+          {% endif %}
+
+          <div class="mt-6 pt-4 border-t border-surface-bright/20 flex items-center justify-between">
+<span class="font-code-sm text-code-sm text-outline">AUDITORÍA: CRIPTOGRÁFICA</span>
+<span class="font-status-badge text-status-badge text-primary-container">LEDGER_SYNC: OK</span>
+</div>
+</div>
+</div>
+</div>
+<!-- TERMINAL FOOTNOTE BAR -->
+<div class="mb-6 p-4 rounded-lg bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-3 text-outline">
+<div class="flex items-center gap-2 font-code-sm text-code-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="">AGENT CONSOLE READY // UNEFA NUCLEUS CARACAS // LATAM-DISTRICT</span>
+</div>
+<div class="font-status-badge text-status-badge tracking-widest text-on-surface-variant">
+        SYS_SIG: 0x9AF831B...DONE
+      </div>
+</div>
+</div>
+<!-- Microinteraction Tab Filter Script -->
+<script>
+    function filterModule(target) {
+      const tabs = document.querySelectorAll('#filter-tab-bar .tab-btn');
+      const cards = {
+        laboral: document.getElementById('module-laboral'),
+        academico: document.getElementById('module-academico'),
+        bancario: document.getElementById('module-bancario'),
+        bonos: document.getElementById('module-bonos')
+      };
+
+      tabs.forEach(tab => {
+        if (tab.getAttribute('data-target') === target) {
+          tab.classList.remove('bg-surface-container', 'text-on-surface-variant');
+          tab.classList.add('bg-primary-container', 'text-on-primary-container');
+        } else {
+          tab.classList.remove('bg-primary-container', 'text-on-primary-container');
+          tab.classList.add('bg-surface-container', 'text-on-surface-variant');
+        }
+      });
+
+      Object.keys(cards).forEach(key => {
+        const el = cards[key];
+        if (!el) return;
+        if (target === 'all' || target === key) {
+          el.style.display = 'flex';
+          el.classList.add('animate-fadeIn');
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</div></main>
+<!-- Global Footer -->
+<footer class="w-full border-t border-slate-900 bg-[#06060a] px-6 py-6 text-center sm:flex sm:justify-between sm:items-center text-xs font-mono text-slate-500">
+<div class="">
+      © 2026 NIGHTKIDS COLLECTIVE [Night kids Group]. ALL PROTOCOLS VERIFIED.
+    </div>
+<div class="mt-3 sm:mt-0 flex justify-center items-center gap-4">
+<a class="hover:text-cyan-400 transition-colors" href="https://github.com">GitHub</a>
+<a class="hover:text-cyan-400 transition-colors" href="https://discord.com">Discord</a>
+<span class="flex items-center gap-1.5 text-cyan-400 bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Active
+      </span>
+</div>
+</footer>
+<!-- ══════════ JS: PROGRESSIVE ENHANCEMENT ══════════ -->
+<script>
+    (function () {
+      const pwd = document.getElementById('password');
+      const pwdConfirm = document.getElementById('confirm_password');
+      const strengthBar = document.getElementById('password-strength');
+      const strengthHint = document.getElementById('password-hint');
+      const matchHint = document.getElementById('password-match-hint');
+      const bioInput = document.getElementById('bio');
+      const bioCount = document.getElementById('bio-count');
+      const dropzone = document.getElementById('dropzone');
+      const fileInput = document.getElementById('credential_file');
+      const fileName = document.getElementById('file-name');
+      const form = document.getElementById('register-form');
+      const submitBtn = document.getElementById('submit-btn');
+      const submitText = document.getElementById('submit-text');
+
+      // ── Password strength ──
+      if (pwd && strengthBar && strengthHint) {
+        pwd.addEventListener('input', () => {
+          const v = pwd.value;
+          let score = 0;
+          if (v.length >= 8) score++;
+          if (v.length >= 12) score++;
+          if (/[A-Z]/.test(v)) score++;
+          if (/[0-9]/.test(v)) score++;
+          if (/[^A-Za-z0-9]/.test(v)) score++;
+
+          const pct = (score / 5) * 100;
+          strengthBar.style.width = pct + '%';
+          strengthBar.className = 'h-full transition-all duration-300 ' + (
+            score <= 2 ? 'bg-rose-500 shadow-[0_0_8px_#f43f5e]' :
+            score === 3 ? 'bg-amber-400 shadow-[0_0_8px_#f59e0b]' :
+            'bg-cyan-400 shadow-[0_0_8px_#00f0ff]'
+          );
+          strengthHint.textContent =
+            score <= 2 ? 'Débil — añade mayúsculas, números y símbolos' :
+            score === 3 ? 'Aceptable' :
+            'Fuerte ✓ Protocolo Seguro';
+        });
+      }
+
+      // ── Password match ──
+      if (pwdConfirm && pwd && matchHint) {
+        function checkMatch() {
+          if (!pwdConfirm.value) {
+            matchHint.textContent = '';
+            return;
+          }
+          if (pwd.value === pwdConfirm.value) {
+            matchHint.textContent = '✓ Las contraseñas coinciden';
+            matchHint.className = 'mt-1 font-mono text-xs text-cyan-400';
+          } else {
+            matchHint.textContent = '✗ Las contraseñas no coinciden';
+            matchHint.className = 'mt-1 font-mono text-xs text-rose-400';
+          }
+        }
+        pwdConfirm.addEventListener('input', checkMatch);
+        pwd.addEventListener('input', checkMatch);
+      }
+
+      // ── Bio counter ──
+      if (bioInput && bioCount) {
+        bioInput.addEventListener('input', () => {
+          bioCount.textContent = bioInput.value.length;
+        });
+      }
+
+      // ── File upload preview ──
+      if (dropzone && fileInput) {
+        dropzone.addEventListener('click', () => fileInput.click());
+
+        dropzone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropzone.classList.add('border-cyan-400', 'bg-cyan-950/20');
+        });
+        dropzone.addEventListener('dragleave', () => {
+          dropzone.classList.remove('border-cyan-400', 'bg-cyan-950/20');
+        });
+        dropzone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('border-cyan-400', 'bg-cyan-950/20');
+          if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            showFile(e.dataTransfer.files[0]);
+          }
+        });
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files.length) showFile(fileInput.files[0]);
+        });
+
+        function showFile(f) {
+          const sizeMB = (f.size / 1024 / 1024).toFixed(2);
+          fileName.textContent = '✓ ' + f.name + ' (' + sizeMB + ' MB)';
+          fileName.classList.remove('hidden');
+        }
+      }
+
+      // ── Double-submit prevention ──
+      if (form && submitBtn && submitText) {
+        form.addEventListener('submit', () => {
+          submitBtn.disabled = true;
+          submitText.textContent = 'REGISTRANDO...';
+        });
+      }
+    })();
+  </script>
+
+
+</body></html>
