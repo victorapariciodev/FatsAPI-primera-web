@@ -1,0 +1,182 @@
+{% extends "store/base.html" %}
+{% block title %}Catálogo{% endblock %}
+
+{% block content %}
+<div class="flex items-end justify-between gap-4 mb-6">
+  <div>
+    <p class="font-code-sm text-code-sm text-on-surface-variant mb-1">// INVENTARIO_ACTIVO</p>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">CATÁLOGO</h1>
+  </div>
+  <p class="font-code-md text-code-md text-on-surface-variant">
+    MOSTRANDO {{ productos['items']|length }} DE {{ productos.total }}
+  </p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-gutter">
+
+  {# ---------------- Filtros ---------------- #}
+  <aside class="space-y-6">
+    <form action="/tienda" method="get" class="space-y-6 border border-outline-variant rounded-xl p-space-md bg-surface-container-low">
+
+      {% if filtros.q %}
+      <input type="hidden" name="q" value="{{ filtros.q }}">
+      {% endif %}
+
+      <div>
+        <p class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-3">Categoría</p>
+        <div class="flex flex-wrap gap-2">
+          <a href="{{ request.url.include_query_params(category='', page=1) }}"
+             class="px-2.5 py-1 rounded border font-code-sm text-code-sm {{ 'border-primary-container text-primary-container' if not filtros.category else 'border-outline-variant text-on-surface-variant hover:border-outline' }}">
+            Todas
+          </a>
+          {% for categoria in categorias %}
+          <a href="{{ request.url.include_query_params(category=categoria, page=1) }}"
+             class="px-2.5 py-1 rounded border font-code-sm text-code-sm {{ 'border-primary-container text-primary-container' if filtros.category == categoria else 'border-outline-variant text-on-surface-variant hover:border-outline' }}">
+            {{ categoria }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <p class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-3">Talla</p>
+        <div class="flex flex-wrap gap-2">
+          {% for talla in tallas %}
+          <a href="{{ request.url.include_query_params(size=('' if filtros.size == talla else talla), page=1) }}"
+             class="w-9 h-9 rounded border flex items-center justify-center font-code-md text-code-md {{ 'border-primary-container text-primary-container' if filtros.size == talla else 'border-outline-variant text-on-surface-variant hover:border-outline' }}">
+            {{ talla }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <p class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-3">Precio (USD)</p>
+        <div class="flex items-center gap-2">
+          <input type="number" name="min_price" min="0" step="1" value="{{ filtros.min_price or '' }}" placeholder="Min"
+                 class="w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+          <span class="text-on-surface-variant">—</span>
+          <input type="number" name="max_price" min="0" step="1" value="{{ filtros.max_price or '' }}" placeholder="Max"
+                 class="w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+        </div>
+      </div>
+
+      <div>
+        <p class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-3">Orden</p>
+        <select name="sort" class="w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm" onchange="this.form.submit()">
+          <option value="newest" {{ 'selected' if filtros.sort == 'newest' }}>Más recientes</option>
+          <option value="price_asc" {{ 'selected' if filtros.sort == 'price_asc' }}>Precio: menor</option>
+          <option value="price_desc" {{ 'selected' if filtros.sort == 'price_desc' }}>Precio: mayor</option>
+        </select>
+      </div>
+
+      <label class="flex items-center gap-2 font-code-sm text-code-sm text-on-surface-variant cursor-pointer">
+        <input type="checkbox" name="in_stock" value="true" {{ 'checked' if filtros.in_stock }} class="accent-primary-container" onchange="this.form.submit()">
+        Solo disponibles
+      </label>
+
+      {% if filtros.size %}<input type="hidden" name="size" value="{{ filtros.size }}">{% endif %}
+      {% if filtros.category %}<input type="hidden" name="category" value="{{ filtros.category }}">{% endif %}
+
+      <button type="submit" class="w-full h-9 rounded bg-surface-container-high border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">
+        Aplicar filtros
+      </button>
+      <a href="/tienda" class="flex items-center justify-center gap-2 w-full h-9 rounded border border-outline-variant font-label-caps text-label-caps uppercase text-on-surface-variant hover:text-on-surface transition-colors">
+        <span class="material-symbols-outlined text-[16px]">restart_alt</span> Limpiar filtros
+      </a>
+    </form>
+  </aside>
+
+  {# ---------------- Grid ---------------- #}
+  <section>
+    {% if productos['items'] %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-gutter">
+      {% for producto in productos['items'] %}
+      {% set sin_stock = (producto.variants|sum(attribute='stock')) == 0 %}
+      <article class="group border border-outline-variant rounded-xl overflow-hidden bg-surface-container flex flex-col hover:border-outline transition-colors">
+
+        <a href="/tienda/{{ producto.slug }}" class="block aspect-[4/5] bg-surface-container-high overflow-hidden">
+          {% if producto.image_url %}
+          <img src="{{ producto.image_url }}" alt="{{ producto.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+          {% else %}
+          <div class="w-full h-full flex items-center justify-center text-outline-variant">
+            <span class="material-symbols-outlined text-[48px]">checkroom</span>
+          </div>
+          {% endif %}
+        </a>
+
+        <div class="p-space-md flex flex-col gap-3 flex-1">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="font-label-caps text-label-caps uppercase text-on-surface-variant">{{ producto.category }}</p>
+              <h2 class="font-headline-sm text-headline-sm text-on-surface truncate">{{ producto.name }}</h2>
+            </div>
+            {% if sin_stock %}
+            <span class="shrink-0 px-2 py-0.5 rounded border border-error/50 text-error font-status-badge text-status-badge uppercase">Agotado</span>
+            {% endif %}
+          </div>
+
+          <p class="font-code-lg text-code-lg text-primary-container">
+            ${{ "%.2f"|format(producto.price|float) }} <span class="font-code-sm text-code-sm text-on-surface-variant">{{ producto.currency }}</span>
+          </p>
+
+          <div class="flex flex-wrap gap-1.5">
+            {% for variante in producto.variants %}
+            <a href="/tienda/{{ producto.slug }}?size={{ variante.size }}"
+               class="px-2 py-0.5 rounded border font-code-sm text-code-sm {{ 'border-outline-variant text-outline line-through' if variante.stock == 0 else 'border-outline-variant text-on-surface-variant hover:border-primary-container hover:text-primary-container' }}"
+               title="{{ variante.color }} — SKU {{ variante.sku }}">
+              {{ variante.size }}
+            </a>
+            {% endfor %}
+          </div>
+
+          {# El bloque de producto NO conoce variant_id: solo puede llevar al detalle. #}
+          {% if sin_stock %}
+          <button type="button" disabled
+                  class="mt-auto w-full h-10 rounded bg-surface-container-high border border-outline-variant font-label-caps text-label-caps uppercase text-outline cursor-not-allowed flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">block</span> Agotado
+          </button>
+          {% else %}
+          <a href="/tienda/{{ producto.slug }}"
+             class="mt-auto w-full h-10 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold uppercase flex items-center justify-center gap-2 hover:bg-primary-fixed transition-colors">
+            Elegir talla <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {# ---------------- Paginación ---------------- #}
+    {% if productos.pages > 1 %}
+    <div class="mt-6 flex items-center justify-between font-code-md text-code-md text-on-surface-variant">
+      <span>PÁGINA {{ productos.page }} / {{ productos.pages }}</span>
+      <div class="flex items-center gap-2">
+        {% if productos.page > 1 %}
+        <a href="{{ request.url.include_query_params(page=productos.page - 1) }}"
+           class="px-3 py-1.5 rounded border border-outline-variant hover:border-primary-container hover:text-primary-container">[ &lt; anterior ]</a>
+        {% endif %}
+        {% if productos.page < productos.pages %}
+        <a href="{{ request.url.include_query_params(page=productos.page + 1) }}"
+           class="px-3 py-1.5 rounded border border-outline-variant hover:border-primary-container hover:text-primary-container">[ siguiente &gt; ]</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    {# ---------------- Estado vacío ---------------- #}
+    <div class="border border-dashed border-outline-variant rounded-xl p-space-2xl flex flex-col items-center justify-center text-center gap-4 min-h-[380px]">
+      <span class="material-symbols-outlined text-[48px] text-outline-variant">search_off</span>
+      <div>
+        <p class="font-headline-sm text-headline-sm text-on-surface mb-1">No encontramos prendas con esos filtros</p>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Prueba con otra talla, categoría o rango de precio.</p>
+      </div>
+      <a href="/tienda" class="px-4 py-2 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">
+        Limpiar filtros
+      </a>
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

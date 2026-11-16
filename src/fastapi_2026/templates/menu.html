@@ -6,7 +6,6 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script id="tailwind-config">
     tailwind.config = {
@@ -65,7 +64,6 @@
     .font-mono-code {
       font-family: 'JetBrains Mono', monospace;
     }
-    /* Subtle neon scanline & grid */
     .cyber-grid {
       background-image: radial-gradient(rgba(0, 240, 255, 0.15) 1px, transparent 1px);
       background-size: 32px 32px;
@@ -82,39 +80,51 @@
   </style>
 <meta content="web_standard" name="shell-type"></head>
 <body class="min-h-screen antialiased flex flex-col justify-between selection:bg-cyan-500/30 selection:text-cyan-200">
-<!-- Top Navigation / Shell Header -->
+<!-- Top Navigation / Shell Header con Botón Directo a Tienda (Mercadito) -->
 <header class="w-full bg-[#0a0a0f]/90 backdrop-blur-md border-b border-surface-bright/50 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-<div class="flex items-center gap-4">
-<div class="flex items-center gap-3">
-<img alt="NightKids Logo" class="h-8 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcWQRDtKOd-qCZcFzhlYUnBbGDvxCmGxkbmciPApp94XZHBOQ-bv5qwO25ZbfTqlNTpxlYmLCdFvqR03L7BnAGyn3KZ-D-_cdARqdAP6LAKY3bgAapuM3XrpC7Xt-LP12GAzQIDCzQ9cL9lFl0yFvy9Jrha7MobUqUyS5tif_PMAiTgZkeSoE0b6l_J76kEVEGvyQ_V5hehsV3J4PEzab3WJpVyA2FZr5PJ8WdwZKpWBaRMBTecGz4">
-<span class="font-bold tracking-wider text-lg font-mono text-cyan-400">NIGHTKIDS</span>
-</div>
-<span class="hidden md:inline-block text-xs font-mono text-slate-500 border-l border-slate-700 pl-3">
-        // PROTOCOL // ENROLLMENT_PORTAL
-      </span>
-</div>
-<nav class="hidden md:flex items-center gap-6 text-xs font-mono text-slate-300">
-<a class="hover:text-cyan-400 transition-colors" href="#">// Code projects</a>
-<a class="hover:text-cyan-400 transition-colors" href="#">// Timeline</a>
-<a class="hover:text-cyan-400 transition-colors" href="#">// Stream HUD</a>
-<a class="hover:text-cyan-400 transition-colors" href="#">// Repos GitHub</a>
-</nav>
-<div class="flex items-center gap-4">
-<div class="hidden sm:flex items-center gap-2 text-xs font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 px-3 py-1 rounded-full">
-<span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-<span class="">SYSTEM: ONLINE</span>
-</div>
-<a class="text-xs font-mono text-slate-300 hover:text-cyan-400 transition-colors py-1.5 px-3 rounded border border-slate-700 hover:border-cyan-500/40" href="/login">
-        INICIAR SESIÓN
-      </a>
-</div>
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-3">
+      <img alt="NightKids Logo" class="h-10 w-auto rounded bg-white p-0.5 object-contain" src="{{ url_for('static', path='images/logo-web.png') }}">
+    </div>
+    <span class="hidden md:inline-block text-xs font-mono text-slate-500 border-l border-slate-700 pl-3">
+      // PROTOCOL // ENROLLMENT_PORTAL
+    </span>
+  </div>
+
+  <nav class="hidden md:flex items-center gap-6 text-xs font-mono text-slate-300">
+    <a class="hover:text-cyan-400 transition-colors" href="/#underground-projects">// Code projects</a>
+    <a class="hover:text-cyan-400 transition-colors" href="/#timeline-projects">// Timeline</a>
+    <a class="hover:text-cyan-400 transition-colors" href="/#multimedia-viewer">// Stream HUD</a>
+    <a class="hover:text-cyan-400 transition-colors" href="https://github.com/victorapariciodev/FatsAPI-primera-web/tree/feature-Fullweb" target="_blank">// Repos GitHub</a>
+  </nav>
+
+  <div class="flex items-center gap-3 sm:gap-4">
+    <div class="hidden lg:flex items-center gap-2 text-xs font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 px-3 py-1 rounded-full">
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+      <span>SYSTEM: ONLINE</span>
+    </div>
+
+    <!-- BOTÓN SUPERIOR DIRECTO A LA TIENDA (MERCADITO) -->
+    <a class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-cyan-950/50 hover:bg-cyan-900/60 text-cyan-300 hover:text-cyan-200 border border-cyan-500/50 hover:border-cyan-400 transition-all text-xs font-mono font-bold tracking-wider shadow-[0_0_12px_rgba(0,240,255,0.25)] hover:shadow-[0_0_20px_rgba(0,240,255,0.45)]" href="/tienda" title="Ir al Catálogo de Productos y Hardware">
+      <span class="material-symbols-outlined text-[17px] text-cyan-400">storefront</span>
+      <span>TIENDA</span>
+    </a>
+
+    <!-- INICIAR SESIÓN -->
+    <a class="text-xs font-mono text-slate-300 hover:text-cyan-400 transition-colors py-1.5 px-3 rounded border border-slate-700 hover:border-cyan-500/40 inline-flex items-center gap-1.5" href="/login">
+      <span class="material-symbols-outlined text-[15px]">login</span>
+      <span class="hidden sm:inline">INICIAR SESIÓN</span>
+    </a>
+  </div>
 </header>
+
 <!-- Main Container -->
 <main class="w-full flex-grow flex items-center justify-center py-10 px-4 sm:px-6 relative overflow-hidden"><div class="flex flex-col w-full">
 <!-- AMBIENT SYNTH GLOWS -->
 <div class="relative w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
 <div class="absolute -top-16 left-1/4 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 <div class="absolute top-48 right-10 w-80 h-80 bg-secondary-container/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
 <!-- 1. CABECERA DEL DASHBOARD: HUD IDENTITY MATRIX -->
 <section class="relative bg-surface-container-low rounded-xl p-6 sm:p-8 shadow-xl overflow-hidden mb-8">
 <!-- Top Cyber Decorator Bar -->
@@ -158,8 +168,12 @@
 <span class="">Tel: {{ user.phone_number }}</span>
 </div>
 </div>
-<!-- Terminal Disconnect / Emergency Terminate -->
+<!-- Terminal Disconnect / Emergency Terminate & Quick Store CTA -->
 <div class="flex items-center gap-3">
+<a class="inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-cyan-950/40 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 font-label-caps text-label-caps tracking-widest uppercase transition-all shadow-md" href="/tienda">
+  <span class="material-symbols-outlined text-lg">shopping_bag</span>
+  <span class="hidden sm:inline">Mercadito Store</span>
+</a>
 <a class="group inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-surface-container-highest hover:bg-error-container text-error hover:text-on-surface font-label-caps text-label-caps tracking-widest uppercase transition-all duration-300 shadow-md" href="/logout">
 <span class="material-symbols-outlined text-lg group-hover:animate-pulse">power_settings_new</span>
 <span class="">Cerrar Sesión</span>
@@ -169,18 +183,41 @@
 <!-- Telemetry Sub-ribbon -->
 
 </section>
+{% if primer_ingreso %}
+<!-- Aviso de paso unico: solo aparece en el primer ingreso (services/onboarding.py) -->
+<div class="mb-6 bg-surface-container-low rounded-xl p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 border border-cyan-500/30">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary-container text-2xl">badge</span>
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps tracking-widest uppercase text-primary-container font-bold">Paso único de perfil</span>
+<span class="font-code-md text-code-md text-on-surface-variant">Llena tus datos una sola vez y seguimos directo a la tienda. No volveremos a pedírtelo en el próximo ingreso.</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<form action="/bienvenida/saltar" method="post">
+<button class="px-5 py-3 rounded border border-surface-bright/40 hover:border-primary-container text-on-surface-variant hover:text-primary-container font-label-caps text-label-caps tracking-widest uppercase transition-all" type="submit">
+                Saltar por ahora
+              </button>
+</form>
+<a class="inline-flex items-center gap-2 px-5 py-3 rounded bg-primary-container hover:brightness-110 text-on-primary-container font-label-caps text-label-caps tracking-widest uppercase transition-all shadow-md" href="/tienda">
+<span class="material-symbols-outlined text-base">storefront</span>
+              Ir a la tienda
+            </a>
+</div>
+</div>
+{% endif %}
 <!-- 2. HUD PROFILE PROGRESS & QUICK FILTER BAR -->
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-surface-container-lowest p-4 rounded-xl shadow-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-surface-container-lowest p-4 rounded-xl shadow-lg border border-surface-bright/20">
 <div class="flex items-center gap-4">
 <div class="relative w-12 h-12 flex-shrink-0 flex items-center justify-center">
 <svg class="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
 <path class="text-surface-bright" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
 <path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="3"></path>
 </svg>
-<span class="absolute font-status-badge text-status-badge text-primary-container">75%</span>
+<span class="absolute font-status-badge text-status-badge text-primary-container font-bold">75%</span>
 </div>
 <div>
-<div class="font-label-caps text-label-caps text-on-surface uppercase tracking-wider">Perfil Agente NightKids</div>
+<div class="font-label-caps text-label-caps text-on-surface uppercase tracking-wider font-semibold">Perfil Agente NightKids</div>
 <div class="font-code-sm text-code-sm text-on-surface-variant">3 / 4 Submódulos Sincronizados</div>
 </div>
 </div>
@@ -208,7 +245,7 @@
 <!-- ========================================== -->
 <!-- MÓDULO 1: DATOS LABORALES                  -->
 <!-- ========================================== -->
-<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn" id="module-laboral" style="display: flex;">
+<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn border border-surface-bright/20" id="module-laboral" style="display: flex;">
 <!-- Card Header -->
 <div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/30">
 <div class="flex items-center gap-3">
@@ -216,16 +253,16 @@
 <span class="material-symbols-outlined text-xl">work</span>
 </div>
 <div>
-<h2 class="font-headline-sm text-headline-sm text-on-surface">Datos Laborales</h2>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Datos Laborales</h2>
 <span class="font-status-badge text-status-badge text-outline">MOD: 01 // EMPLOYMENT_PAYLOAD</span>
 </div>
 </div>
           {% if employment %}
-          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-primary-container/10 text-primary-container uppercase">
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-primary-container/10 text-primary-container uppercase font-bold border border-primary-container/30">
             REGISTRADO ✓
           </span>
           {% else %}
-          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-secondary-container/20 text-secondary uppercase animate-pulse">
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-secondary-container/20 text-secondary uppercase animate-pulse border border-secondary/30">
             PENDIENTE !
           </span>
           {% endif %}
@@ -235,21 +272,21 @@
         <!-- Display Readonly State -->
 <div class="flex-grow flex flex-col justify-between gap-6">
 <div class="space-y-4">
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">EMPRESA / ENTIDAD:</span>
 <span class="font-headline-sm text-headline-sm text-on-surface">{{ employment.company_name }}</span>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">CARGO ASIGNADO:</span>
 <span class="font-body-md text-body-md text-primary-container font-mono">{{ employment.job_title }}</span>
 </div>
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">SUELDO BASE MENSUAL:</span>
 <span class="font-body-md text-body-md text-tertiary-fixed font-mono font-bold">${{ employment.salary }}</span>
 </div>
 </div>
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">DIRECCIÓN CORPORATIVA:</span>
 <span class="font-body-sm text-body-sm text-on-surface-variant">{{ employment.company_address }}</span>
 </div>
@@ -304,7 +341,7 @@
 <!-- ========================================== -->
 <!-- MÓDULO 2: ESTUDIOS Y FORMACIÓN ACADÉMICA   -->
 <!-- ========================================== -->
-<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn" id="module-academico" style="display: flex;">
+<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn border border-surface-bright/20" id="module-academico" style="display: flex;">
 <!-- Card Header -->
 <div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/30">
 <div class="flex items-center gap-3">
@@ -312,16 +349,16 @@
 <span class="material-symbols-outlined text-xl">school</span>
 </div>
 <div>
-<h2 class="font-headline-sm text-headline-sm text-on-surface">Estudios y Formación</h2>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Estudios y Formación</h2>
 <span class="font-status-badge text-status-badge text-outline">MOD: 02 // ACADEMIC_CREDENTIALS</span>
 </div>
 </div>
           {% if education %}
-          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-secondary-container/20 text-secondary uppercase">
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-secondary-container/20 text-secondary uppercase font-bold border border-secondary/30">
             CERTIFICADO ✓
           </span>
           {% else %}
-          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-tertiary-container/20 text-tertiary-fixed-dim uppercase animate-pulse">
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-tertiary-container/20 text-tertiary-fixed-dim uppercase animate-pulse border border-tertiary-container/30">
             PENDIENTE !
           </span>
           {% endif %}
@@ -331,15 +368,15 @@
         <!-- Display Readonly State -->
 <div class="flex-grow flex flex-col justify-between gap-6">
 <div class="space-y-4">
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">GRADO ACADÉMICO:</span>
 <span class="font-headline-sm text-headline-sm text-secondary font-mono">{{ education.academic_degree }}</span>
 </div>
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">CARRERA / ÁREA DE ESTUDIO:</span>
 <span class="font-body-md text-body-md text-on-surface">{{ education.field_of_study }}</span>
 </div>
-<div class="bg-surface-container p-4 rounded-lg flex items-center justify-between">
+<div class="bg-surface-container p-4 rounded-lg flex items-center justify-between border border-surface-bright/20">
 <div>
 <span class="font-code-sm text-code-sm text-outline block">ESTADO DEL TCU (SERVICIO COMUNITARIO):</span>
 <span class="font-body-md text-body-md text-tertiary-container font-mono">{{ education.tcu_status }}</span>
@@ -405,7 +442,7 @@
 <!-- ========================================== -->
 <!-- MÓDULO 3: DATOS BANCARIOS                  -->
 <!-- ========================================== -->
-<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn" id="module-bancario" style="display: flex;">
+<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn border border-surface-bright/20" id="module-bancario" style="display: flex;">
 <!-- Card Header -->
 <div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/30">
 <div class="flex items-center gap-3">
@@ -413,16 +450,16 @@
 <span class="material-symbols-outlined text-xl">account_balance</span>
 </div>
 <div>
-<h2 class="font-headline-sm text-headline-sm text-on-surface">Datos Bancarios</h2>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Datos Bancarios</h2>
 <span class="font-status-badge text-status-badge text-outline">MOD: 03 // FINANCIAL_LEDGER_ROUTE</span>
 </div>
 </div>
           {% if banking %}
-          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-tertiary-container/20 text-tertiary-fixed-dim uppercase">
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-tertiary-container/20 text-tertiary-fixed-dim uppercase font-bold border border-tertiary-container/30">
             VINCULADO ✓
           </span>
           {% else %}
-          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-error-container/20 text-error uppercase animate-pulse">
+          <span class="font-status-badge text-status-badge px-2.5 py-1 rounded bg-error-container/20 text-error uppercase animate-pulse border border-error/30">
             PENDIENTE !
           </span>
           {% endif %}
@@ -433,16 +470,16 @@
 <div class="flex-grow flex flex-col justify-between gap-6">
 <div class="space-y-4">
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">INSTITUCIÓN FINANCIERA:</span>
 <span class="font-headline-sm text-headline-sm text-tertiary-fixed font-mono">{{ banking.bank_name }}</span>
 </div>
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">TIPO DE INSTRUMENTO:</span>
 <span class="font-body-md text-body-md text-on-surface font-mono">{{ banking.account_type }}</span>
 </div>
 </div>
-<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1 border border-surface-bright/20">
 <span class="font-code-sm text-code-sm text-outline">NÚMERO DE CUENTA COMPLETO:</span>
 <div class="flex items-center justify-between">
 <span class="font-code-lg text-code-lg text-primary-container font-mono tracking-wider">{{ banking.account_number }}</span>
@@ -508,7 +545,7 @@
 <!-- ========================================== -->
 <!-- MÓDULO 4: MIS BONOS (LEDGER / READONLY)    -->
 <!-- ========================================== -->
-<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn" id="module-bonos" style="display: flex;">
+<div class="module-card flex flex-col bg-surface-container-low rounded-xl p-6 sm:p-7 shadow-xl transition-all duration-300 animate-fadeIn border border-surface-bright/20" id="module-bonos" style="display: flex;">
 <!-- Card Header -->
 <div class="flex items-center justify-between pb-4 mb-6 border-b border-surface-bright/30">
 <div class="flex items-center gap-3">
@@ -516,7 +553,7 @@
 <span class="material-symbols-outlined text-xl">payments</span>
 </div>
 <div>
-<h2 class="font-headline-sm text-headline-sm text-on-surface">Mis Bonos</h2>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Mis Bonos</h2>
 <span class="font-status-badge text-status-badge text-outline">MOD: 04 // INCENTIVE_LEDGER</span>
 </div>
 </div>
@@ -529,7 +566,7 @@
           {% if bonuses %}
           <div class="space-y-3 overflow-y-auto max-h-[300px] pr-1">
             {% for bonus in bonuses %}
-            <div class="bg-surface-container hover:bg-surface-container-high transition-colors p-4 rounded-lg flex items-center justify-between gap-4">
+            <div class="bg-surface-container hover:bg-surface-container-high transition-colors p-4 rounded-lg flex items-center justify-between gap-4 border border-surface-bright/20">
 <div class="flex items-center gap-3 min-w-0">
 <div class="w-8 h-8 rounded bg-primary-container/10 flex items-center justify-center text-primary-container flex-shrink-0">
 <span class="material-symbols-outlined text-base">check_circle</span>
@@ -549,7 +586,7 @@
             {% endfor %}
           </div>
           {% else %}
-          <div class="flex-grow flex flex-col items-center justify-center py-12 text-center bg-surface-container/50 rounded-lg">
+          <div class="flex-grow flex flex-col items-center justify-center py-12 text-center bg-surface-container/50 rounded-lg border border-surface-bright/20">
 <span class="material-symbols-outlined text-4xl text-outline mb-3">hourglass_empty</span>
 <p class="font-body-md text-body-md text-on-surface-variant font-mono">No tienes bonos registrados aún.</p>
 <p class="font-code-sm text-code-sm text-outline mt-1">// Aguardando ciclo de nómina o incentivos NightKids</p>
@@ -564,7 +601,7 @@
 </div>
 </div>
 <!-- TERMINAL FOOTNOTE BAR -->
-<div class="mb-6 p-4 rounded-lg bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-3 text-outline">
+<div class="mb-6 p-4 rounded-lg bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-3 text-outline border border-surface-bright/20">
 <div class="flex items-center gap-2 font-code-sm text-code-sm">
 <span class="w-2 h-2 rounded-full bg-primary-container"></span>
 <span class="">AGENT CONSOLE READY // UNEFA NUCLEUS CARACAS // LATAM-DISTRICT</span>
@@ -614,7 +651,8 @@
       © 2026 NIGHTKIDS COLLECTIVE [Night kids Group]. ALL PROTOCOLS VERIFIED.
     </div>
 <div class="mt-3 sm:mt-0 flex justify-center items-center gap-4">
-<a class="hover:text-cyan-400 transition-colors" href="https://github.com">GitHub</a>
+<a class="hover:text-cyan-400 transition-colors" href="/tienda">Tienda</a>
+<a class="hover:text-cyan-400 transition-colors" href="https://github.com/victorapariciodev/FatsAPI-primera-web/tree/feature-Fullweb" target="_blank">GitHub</a>
 <a class="hover:text-cyan-400 transition-colors" href="https://discord.com">Discord</a>
 <span class="flex items-center gap-1.5 text-cyan-400 bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-500/20">
 <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Active
@@ -728,6 +766,4 @@
       }
     })();
   </script>
-
-
 </body></html>

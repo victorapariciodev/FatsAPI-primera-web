@@ -19,8 +19,9 @@ async def login_submit(request: Request, email: str = Form(...), password: str =
         # 1. Llamamos al servicio
         session = await auth_service.sign_in(email, password)
         
-        # 2. Redirigimos al menú
-        redirect = RedirectResponse(url="/menu", status_code=303)
+        # 2. Al entrar, el primer destino es el paso de perfil: el decide si
+        #    se muestra el formulario (primer ingreso) o si sigue a /tienda.
+        redirect = RedirectResponse(url="/bienvenida", status_code=303)
         
         # 3. Seteamos las cookies
         _set_session_cookies(
@@ -67,8 +68,8 @@ async def register_submit(
         session = await auth_service.sign_up(email, password, profile_data)
         
         if session:
-            # Logueo automático
-            redirect = RedirectResponse(url="/menu", status_code=303)
+            # Logueo automático; el paso de perfil decide a donde seguir.
+            redirect = RedirectResponse(url="/bienvenida", status_code=303)
             _set_session_cookies(
                 response=redirect, 
                 access=session.access_token, 

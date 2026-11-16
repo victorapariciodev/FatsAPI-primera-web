@@ -1,0 +1,162 @@
+{% extends "store/base.html" %}
+{% block title %}Confirmar pedido{% endblock %}
+
+{% block content %}
+<nav class="font-code-sm text-code-sm text-on-surface-variant mb-4" aria-label="Ruta">
+  <a href="/" class="hover:text-primary-container">Inicio</a>
+  <span class="mx-1.5">&gt;</span>
+  <a href="/carrito" class="hover:text-primary-container">Carrito</a>
+  <span class="mx-1.5">&gt;</span>
+  <span class="text-on-surface">Confirmar pedido</span>
+</nav>
+
+<div class="mb-6">
+  <h1 class="font-headline-lg text-headline-lg text-on-surface">CONFIRMAR PEDIDO</h1>
+  <p class="font-code-sm text-code-sm text-on-surface-variant mt-1">Paso 2 de 2 // Datos de entrega</p>
+</div>
+
+<div id="checkout-banner" class="hidden mb-4 border border-error/60 rounded-lg px-space-md py-3 flex items-center justify-between gap-3">
+  <p class="font-code-sm text-code-sm text-error" id="checkout-banner-text"></p>
+  <a href="/carrito" class="shrink-0 px-3 py-1.5 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container">Volver al carrito</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-[60fr_40fr] gap-gutter items-start">
+
+  {# ---------------- Formulario: exactamente ShippingAddress ---------------- #}
+  <form id="checkout-form" class="border border-outline-variant rounded-xl bg-surface-container p-space-lg space-y-5" novalidate>
+    <p class="font-label-caps text-label-caps uppercase text-on-surface-variant">DATOS DE ENTREGA</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <label class="sm:col-span-2 block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Nombre completo</span>
+        <input name="full_name" type="text" required minlength="3" maxlength="120" placeholder="Alex Mercer"
+               class="mt-1 w-full h-11 px-3 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Teléfono</span>
+        <input name="phone" type="tel" required minlength="7" maxlength="30" placeholder="+58 412 000-0000"
+               class="mt-1 w-full h-11 px-3 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Código postal <span class="text-outline">(opcional)</span></span>
+        <input name="postal_code" type="text" maxlength="20" placeholder="1071"
+               class="mt-1 w-full h-11 px-3 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+
+      <label class="sm:col-span-2 block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Dirección</span>
+        <input name="address_line" type="text" required minlength="5" maxlength="200" placeholder="Av. Principal Los Cortijos, Res. Titanium Piso 4"
+               class="mt-1 w-full h-11 px-3 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Ciudad</span>
+        <input name="city" type="text" required minlength="2" maxlength="80" placeholder="Caracas"
+               class="mt-1 w-full h-11 px-3 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Estado</span>
+        <input name="state" type="text" required minlength="2" maxlength="80" placeholder="Distrito Capital"
+               class="mt-1 w-full h-11 px-3 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">País</span>
+        <select name="country" class="mt-1 w-full h-11 px-3 rounded bg-surface-container-high font-body-sm text-body-sm">
+          <option value="VE" selected>Venezuela (VE)</option>
+          <option value="CO">Colombia (CO)</option>
+          <option value="US">Estados Unidos (US)</option>
+          <option value="ES">España (ES)</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="border border-primary-container/60 rounded-lg px-space-md py-3">
+      <p class="font-code-sm text-code-sm text-primary-container">
+        NO SE PROCESA PAGO EN LÍNEA. Coordinamos la entrega al confirmar tu pedido.
+      </p>
+    </div>
+
+    <p id="form-feedback" class="hidden font-code-sm text-code-sm text-error" role="alert"></p>
+  </form>
+
+  {# ---------------- Resumen de solo lectura ---------------- #}
+  <aside class="lg:sticky lg:top-28 border border-outline-variant rounded-xl bg-surface-container p-space-lg space-y-4">
+    <p class="font-label-caps text-label-caps uppercase text-on-surface-variant">RESUMEN_DEL_PEDIDO</p>
+
+    <div class="space-y-3 max-h-64 overflow-auto pr-1">
+      {% for item in carrito['items'] %}
+      <div class="flex justify-between gap-3 font-code-sm text-code-sm">
+        <div class="min-w-0">
+          <p class="text-on-surface truncate">{{ item.product_name }}</p>
+          <p class="text-on-surface-variant">{{ item.size }} / {{ item.color }} × {{ item.quantity }}</p>
+        </div>
+        <p class="text-on-surface whitespace-nowrap">${{ "%.2f"|format(item.line_total|float) }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="space-y-2 border-t border-outline-variant pt-3 font-code-md text-code-md">
+      <div class="flex justify-between text-on-surface-variant">
+        <span>Subtotal</span><span>${{ "%.2f"|format(carrito.subtotal|float) }}</span>
+      </div>
+      <div class="flex justify-between text-on-surface-variant">
+        <span>Envío</span>
+        <span>{% if carrito.shipping_cost|float == 0 %}GRATIS{% else %}${{ "%.2f"|format(carrito.shipping_cost|float) }}{% endif %}</span>
+      </div>
+      <div class="flex justify-between text-on-surface">
+        <span class="font-label-caps text-label-caps uppercase">Total</span>
+        <span class="font-code-lg text-code-lg text-primary-container">${{ "%.2f"|format(carrito.total|float) }}</span>
+      </div>
+    </div>
+
+    <button type="submit" form="checkout-form"
+            class="w-full h-12 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold uppercase flex items-center justify-center gap-2 hover:bg-primary-fixed transition-colors">
+      Confirmar pedido <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+    </button>
+
+    <a href="/carrito" class="w-full h-10 rounded border border-outline-variant font-label-caps text-label-caps uppercase text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors">
+      Volver al carrito
+    </a>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const form = document.getElementById('checkout-form');
+    const feedback = document.getElementById('form-feedback');
+    const banner = document.getElementById('checkout-banner');
+    const bannerText = document.getElementById('checkout-banner-text');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const data = new FormData(form);
+      const shipping = {};
+      for (const [key, value] of data.entries()) {
+        shipping[key] = String(value).trim();
+      }
+      if (!shipping.postal_code) delete shipping.postal_code;
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      try {
+        await NK.request('/api/orders', 'POST', { shipping_address: shipping });
+        window.location.href = '/pedidos?creado=1';
+      } catch (error) {
+        banner.classList.remove('hidden');
+        bannerText.textContent = error.message;
+        feedback.classList.add('hidden');
+      }
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,4 +1,4 @@
-from fastapi import Request, Response, HTTPException, status
+from fastapi import Request, Response, HTTPException, Depends, status
 from typing import Optional
 from fastapi_2026.services.jwt_validator import verify_supabase_jwt
 from fastapi_2026.services.auth import AuthService
@@ -84,3 +84,37 @@ async def get_current_user(request: Request, response: Response) -> dict:
 
     _clear_session_cookies(response)
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
+
+
+async def get_optional_user(request: Request, response: Response) -> Optional[dict]:
+    """Version NO bloqueante del guardian, para paginas publicas.
+
+    El catalogo y el detalle deben renderizar para un anonimo: si no hay
+    sesion (o el token esta vencido) se devuelve None y el layout muestra
+    "Entrar". Los endpoints protegidos siguen exigiendo get_current_user, asi
+    que esto no relaja ningun permiso: solo evita un redirect absurdo en una
+    pagina que es publica por diseno.
+    """
+    try:
+        return await get_current_user(request, response)
+    except HTTPException:
+        return None
+
+
+def user_is_admin(user: Optional[dict]) -> bool:
+    """Unica fuente de verdad del rol. app_metadata, nunca user_metadata."""
+    return ((user or {}).get("app_metadata") or {}).get("role") == "admin"
+
+
+async def require_admin(user: dict = Depends(get_current_user)) -> dict:
+    """Exige el rol admin declarado en app_metadata.
+
+    Se lee app_metadata y NO user_metadata: user_metadata lo puede editar el
+    propio usuario desde el cliente, app_metadata solo lo edita el backend.
+    """
+    if not user_is_admin(user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Se requiere rol de administrador.",
+        )
+    return user
