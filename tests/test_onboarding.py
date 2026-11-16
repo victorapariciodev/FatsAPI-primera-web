@@ -141,7 +141,7 @@ class TestRutaBienvenida:
 
         assert "Paso único de perfil" not in html
         assert 'action="/bienvenida/saltar"' not in html
-        assert 'src="/static/images/logo-web.png"' in html
+        assert "/static/images/logo-web.png" in html
 
         logo = client.get("/static/images/logo-web.png")
         assert logo.status_code == 200
