@@ -9,7 +9,7 @@ ENV_FILE_PATH = BASE_DIR / ".env"
 # Forzamos la carga
 if ENV_FILE_PATH.exists():
     print(f"✅ Archivo .env encontrado en: {ENV_FILE_PATH}")
-    load_dotenv(dotenv_path=ENV_FILE_PATH, override=True)
+    load_dotenv(dotenv_path=ENV_FILE_PATH, override=False)
 else:
     print(f"❌ ERROR: No se encontró el archivo .env en: {ENV_FILE_PATH}")
 
