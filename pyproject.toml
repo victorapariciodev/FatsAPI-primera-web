@@ -23,3 +23,13 @@ build-backend = "uv_build"
 
 [tool.setuptools.packages.find]
 where = ["src"] # <-- Le dice a Python que busque paquetes dentro de 'src'
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]

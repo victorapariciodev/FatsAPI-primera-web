@@ -1,0 +1,196 @@
+{% extends "store/base.html" %}
+{% block title %}Carrito{% endblock %}
+
+{% block content %}
+<nav class="font-code-sm text-code-sm text-on-surface-variant mb-4" aria-label="Ruta">
+  <a href="/" class="hover:text-primary-container">Inicio</a>
+  <span class="mx-1.5">&gt;</span>
+  <a href="/tienda" class="hover:text-primary-container">Tienda</a>
+  <span class="mx-1.5">&gt;</span>
+  <span class="text-on-surface">Carrito</span>
+</nav>
+
+<div class="flex items-end justify-between gap-4 mb-6">
+  <h1 class="font-headline-lg text-headline-lg text-on-surface">
+    CARRITO <span class="font-code-md text-code-md text-on-surface-variant">// {{ carrito.total_items }} ITEMS</span>
+  </h1>
+  {% if carrito['items'] %}
+  <button type="button" id="clear-cart"
+          class="flex items-center gap-2 px-3 py-1.5 rounded border border-outline-variant font-label-caps text-label-caps uppercase text-on-surface-variant hover:border-error hover:text-error transition-colors">
+    <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span> Vaciar carrito
+  </button>
+  {% endif %}
+</div>
+
+{% if carrito['items'] %}
+<div class="grid grid-cols-1 lg:grid-cols-[65fr_35fr] gap-gutter items-start">
+
+  {# ---------------- Lista de items ---------------- #}
+  <div class="divide-y divide-outline-variant border border-outline-variant rounded-xl bg-surface-container overflow-hidden"
+       id="cart-rows">
+    {% for item in carrito['items'] %}
+    <div class="p-space-md flex gap-4" data-item-id="{{ item.id }}" data-stock="{{ item.stock_available }}">
+      <div class="w-20 shrink-0 aspect-[4/5] rounded bg-surface-container-high overflow-hidden">
+        {% if item.image_url %}
+        <img src="{{ item.image_url }}" alt="{{ item.product_name }}" class="w-full h-full object-cover">
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center text-outline-variant">
+          <span class="material-symbols-outlined text-[24px]">checkroom</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="flex-1 min-w-0 space-y-2">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <a href="/tienda/{{ item.product_slug or item.product_id }}" class="font-headline-sm text-headline-sm text-on-surface hover:text-primary-container truncate block">{{ item.product_name }}</a>
+            <p class="font-code-sm text-code-sm text-on-surface-variant">SKU: {{ item.sku }}</p>
+          </div>
+          <p class="font-code-lg text-code-lg text-on-surface whitespace-nowrap">${{ "%.2f"|format(item.line_total|float) }}</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-2 py-0.5 rounded border border-outline-variant font-code-sm text-code-sm text-on-surface-variant">Talla {{ item.size }}</span>
+          <span class="px-2 py-0.5 rounded border border-outline-variant font-code-sm text-code-sm text-on-surface-variant">{{ item.color }}</span>
+          <span class="font-code-sm text-code-sm text-on-surface-variant">${{ "%.2f"|format(item.unit_price|float) }} c/u</span>
+        </div>
+
+        {% if item.quantity > item.stock_available %}
+        <p class="font-code-sm text-code-sm text-tertiary-container">SOLO QUEDAN {{ item.stock_available }} UNIDADES</p>
+        {% endif %}
+
+        <div class="flex items-center justify-between gap-3">
+          <div class="inline-flex items-center border border-outline-variant rounded">
+            <button type="button" class="qty-step w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container" data-delta="-1" aria-label="Restar">−</button>
+            <input type="number" class="qty-input w-12 h-8 text-center bg-transparent border-0 font-code-md text-code-md"
+                   value="{{ item.quantity }}" min="1" max="{{ item.stock_available }}">
+            <button type="button" class="qty-step w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container" data-delta="1" aria-label="Sumar">+</button>
+          </div>
+
+          <button type="button" class="remove-item p-2 rounded text-on-surface-variant hover:text-error transition-colors" aria-label="Quitar {{ item.product_name }}">
+            <span class="material-symbols-outlined text-[20px]">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {# ---------------- Resumen sticky (todos los montos vienen del servidor) ---------------- #}
+  <aside class="lg:sticky lg:top-28 border border-outline-variant rounded-xl bg-surface-container p-space-lg space-y-4">
+    <p class="font-label-caps text-label-caps uppercase text-on-surface-variant">RESUMEN_DEL_PEDIDO</p>
+
+    <div class="space-y-2 font-code-md text-code-md">
+      <div class="flex justify-between text-on-surface-variant">
+        <span>Subtotal</span>
+        <span data-field="subtotal">${{ "%.2f"|format(carrito.subtotal|float) }}</span>
+      </div>
+      <div class="flex justify-between text-on-surface-variant">
+        <span>Envío</span>
+        <span data-field="shipping">
+          {% if carrito.shipping_cost|float == 0 %}GRATIS{% else %}${{ "%.2f"|format(carrito.shipping_cost|float) }}{% endif %}
+        </span>
+      </div>
+      <div class="border-t border-outline-variant pt-2 flex justify-between text-on-surface">
+        <span class="font-label-caps text-label-caps uppercase">Total</span>
+        <span class="font-code-lg text-code-lg text-primary-container" data-field="total">${{ "%.2f"|format(carrito.total|float) }}</span>
+      </div>
+    </div>
+
+    <p class="font-code-sm text-code-sm text-on-surface-variant">
+      Envío gratis desde ${{ "%.2f"|format(carrito.free_shipping_threshold|float) }}
+    </p>
+
+    <a href="/pedido/confirmar"
+       class="w-full h-12 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold uppercase flex items-center justify-center gap-2 hover:bg-primary-fixed transition-colors">
+      Continuar pedido <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+    </a>
+
+    <a href="/tienda" class="w-full h-10 rounded border border-outline-variant font-label-caps text-label-caps uppercase text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors">
+      Seguir comprando
+    </a>
+
+    <p class="font-code-sm text-code-sm text-on-surface-variant">No se procesa pago en línea.</p>
+  </aside>
+</div>
+
+{% else %}
+{# ---------------- Estado vacío ---------------- #}
+<div class="border border-dashed border-outline-variant rounded-xl p-space-2xl flex flex-col items-center justify-center text-center gap-4 min-h-[320px]">
+  <span class="material-symbols-outlined text-[48px] text-outline-variant">shopping_cart</span>
+  <div>
+    <p class="font-headline-sm text-headline-sm text-on-surface mb-1">Tu carrito está vacío</p>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Explora el catálogo y agrega prendas.</p>
+  </div>
+  <a href="/tienda" class="px-4 py-2 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">
+    Ir a la tienda
+  </a>
+</div>
+{% endif %}
+
+<p id="cart-feedback" class="hidden mt-4 font-code-sm text-code-sm text-error" role="alert"></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const rows = document.getElementById('cart-rows');
+    if (!rows) return;
+
+    const feedback = document.getElementById('cart-feedback');
+
+    function fail(message) {
+      feedback.textContent = '// ' + message;
+      feedback.classList.remove('hidden');
+    }
+
+    async function patchItem(itemId, quantity) {
+      try {
+        await NK.request(`/api/cart/items/${itemId}`, 'PATCH', { quantity });
+        window.location.reload();
+      } catch (error) {
+        fail(error.message);
+      }
+    }
+
+    rows.querySelectorAll('[data-item-id]').forEach((row) => {
+      const itemId = row.dataset.itemId;
+      const stock = Number(row.dataset.stock);
+      const input = row.querySelector('.qty-input');
+
+      row.querySelectorAll('.qty-step').forEach((button) => {
+        button.addEventListener('click', () => {
+          const next = Number(input.value) + Number(button.dataset.delta);
+          if (next < 1) return;
+          if (next > stock) return fail(`Solo quedan ${stock} unidades`);
+          patchItem(itemId, next);
+        });
+      });
+
+      input.addEventListener('change', () => {
+        const value = Math.max(1, Math.min(stock, Number(input.value) || 1));
+        patchItem(itemId, value);
+      });
+
+      row.querySelector('.remove-item').addEventListener('click', async () => {
+        try {
+          await NK.request(`/api/cart/items/${itemId}`, 'DELETE');
+          window.location.reload();
+        } catch (error) {
+          fail(error.message);
+        }
+      });
+    });
+
+    document.getElementById('clear-cart').addEventListener('click', async () => {
+      if (!window.confirm('¿Vaciar el carrito completo?')) return;
+      try {
+        await NK.request('/api/cart', 'DELETE');
+        window.location.reload();
+      } catch (error) {
+        fail(error.message);
+      }
+    });
+  })();
+</script>
+{% endblock %}

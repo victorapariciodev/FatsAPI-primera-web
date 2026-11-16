@@ -1,0 +1,354 @@
+{% extends "store/base.html" %}
+{% block title %}Admin · Productos{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+  <div>
+    <p class="font-code-sm text-code-sm text-on-surface-variant mb-1">ADMIN // ROLE: ADMIN</p>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">GESTIÓN DE PRODUCTOS</h1>
+  </div>
+  <div class="flex items-center gap-4">
+    <p class="font-code-md text-code-md text-on-surface-variant">
+      {{ productos.total }} PRODUCTOS // {{ inactivos }} INACTIVOS
+    </p>
+    <button type="button" id="open-new"
+            class="px-4 h-10 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold uppercase flex items-center gap-2 hover:bg-primary-fixed transition-colors">
+      <span class="material-symbols-outlined text-[18px]">add</span> Nuevo producto
+    </button>
+  </div>
+</div>
+
+<p id="admin-feedback" class="hidden mb-4 font-code-sm text-code-sm" role="alert"></p>
+
+{# ---------------- Toolbar / filtros ---------------- #}
+<form action="/admin/productos" method="get" class="mb-4 flex flex-wrap items-center gap-3">
+  <div class="relative flex-1 min-w-[240px]">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+    <input type="text" name="q" value="{{ filtros.q or '' }}" placeholder="Buscar por nombre o SKU..."
+           class="w-full h-10 pl-10 pr-3 rounded bg-surface-container-high font-body-sm text-body-sm">
+  </div>
+
+  <select name="category" class="h-10 px-3 rounded bg-surface-container-high font-code-sm text-code-sm" onchange="this.form.submit()">
+    <option value="">Todas las categorías</option>
+    {% for categoria in categorias %}
+    <option value="{{ categoria }}" {{ 'selected' if filtros.category == categoria }}>{{ categoria }}</option>
+    {% endfor %}
+  </select>
+
+  <label class="flex items-center gap-2 font-code-sm text-code-sm text-on-surface-variant cursor-pointer">
+    <input type="checkbox" name="include_inactive" value="true" {{ 'checked' if filtros.include_inactive }} class="accent-primary-container" onchange="this.form.submit()">
+    Incluir inactivos
+  </label>
+
+  <button type="submit" class="h-10 px-4 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">Filtrar</button>
+</form>
+
+{# ---------------- Tabla ---------------- #}
+<div class="border border-outline-variant rounded-xl overflow-hidden bg-surface-container">
+  <table class="w-full text-left">
+    <thead class="bg-surface-container-high border-b border-outline-variant">
+      <tr class="font-label-caps text-label-caps uppercase text-on-surface-variant">
+        <th class="px-3 py-2">Imagen</th>
+        <th class="px-3 py-2">Nombre</th>
+        <th class="px-3 py-2">Categoría</th>
+        <th class="px-3 py-2 text-right">Precio</th>
+        <th class="px-3 py-2 text-right">Stock total</th>
+        <th class="px-3 py-2">SKU ejemplo</th>
+        <th class="px-3 py-2">Estado</th>
+        <th class="px-3 py-2 text-right">Acciones</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-outline-variant">
+      {% for producto in productos['items'] %}
+      {% set stock_total = producto.variants|sum(attribute='stock') %}
+      <tr class="align-top {{ 'opacity-60' if not producto.is_active }}">
+        <td class="px-3 py-3">
+          <div class="w-12 h-[60px] rounded bg-surface-container-high overflow-hidden">
+            {% if producto.image_url %}
+            <img src="{{ producto.image_url }}" alt="" class="w-full h-full object-cover">
+            {% else %}
+            <div class="w-full h-full flex items-center justify-center text-outline-variant">
+              <span class="material-symbols-outlined text-[18px]">checkroom</span>
+            </div>
+            {% endif %}
+          </div>
+        </td>
+        <td class="px-3 py-3 font-body-sm text-body-sm text-on-surface">{{ producto.name }}</td>
+        <td class="px-3 py-3 font-code-sm text-code-sm text-on-surface-variant">{{ producto.category }}</td>
+        <td class="px-3 py-3 font-code-md text-code-md text-on-surface text-right">${{ "%.2f"|format(producto.price|float) }}</td>
+        <td class="px-3 py-3 font-code-md text-code-md text-right {{ 'text-error' if stock_total == 0 else 'text-on-surface' }}">{{ stock_total }}</td>
+        <td class="px-3 py-3 font-code-sm text-code-sm text-on-surface-variant">{{ producto.variants[0].sku if producto.variants else '—' }}</td>
+        <td class="px-3 py-3">
+          <span class="px-2 py-0.5 rounded border font-status-badge text-status-badge uppercase {{ 'border-primary-container/60 text-primary-container' if producto.is_active else 'border-outline-variant text-outline' }}">
+            {{ 'Activo' if producto.is_active else 'Inactivo' }}
+          </span>
+        </td>
+        <td class="px-3 py-3">
+          <div class="flex items-center justify-end gap-2 font-code-sm text-code-sm">
+            <button type="button" class="toggle-active px-2 py-1 rounded border border-outline-variant hover:border-primary-container hover:text-primary-container transition-colors"
+                    data-product-id="{{ producto.id }}" data-next="{{ 'false' if producto.is_active else 'true' }}">
+              [{{ 'desactivar' if producto.is_active else 'activar' }}]
+            </button>
+            <button type="button" class="open-edit px-2 py-1 rounded border border-outline-variant hover:border-primary-container hover:text-primary-container transition-colors"
+                    data-product-id="{{ producto.id }}">
+              [editar]
+            </button>
+          </div>
+        </td>
+      </tr>
+
+      {# ---------------- Fila de edición: datos + stock por variante ---------------- #}
+      <tr class="hidden bg-surface-container-low" data-edit-row="{{ producto.id }}">
+        <td colspan="8" class="px-3 py-4">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <form class="edit-product space-y-3" data-product-id="{{ producto.id }}">
+              <p class="font-label-caps text-label-caps uppercase text-on-surface-variant">Datos del producto</p>
+              <label class="block">
+                <span class="font-code-sm text-code-sm text-on-surface-variant">Nombre</span>
+                <input name="name" value="{{ producto.name }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-body-sm text-body-sm">
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="block">
+                  <span class="font-code-sm text-code-sm text-on-surface-variant">Categoría</span>
+                  <input name="category" value="{{ producto.category }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-body-sm text-body-sm">
+                </label>
+                <label class="block">
+                  <span class="font-code-sm text-code-sm text-on-surface-variant">Precio</span>
+                  <input name="price" type="number" step="0.01" min="0.01" value="{{ producto.price }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+                </label>
+              </div>
+              <label class="block">
+                <span class="font-code-sm text-code-sm text-on-surface-variant">Descripción</span>
+                <textarea name="description" rows="2" class="mt-1 w-full px-2 py-1 rounded bg-surface-container-high font-body-sm text-body-sm">{{ producto.description or '' }}</textarea>
+              </label>
+              <label class="block">
+                <span class="font-code-sm text-code-sm text-on-surface-variant">image_url</span>
+                <input name="image_url" value="{{ producto.image_url or '' }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+              </label>
+              <button type="submit" class="h-9 px-4 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps uppercase">Guardar producto</button>
+            </form>
+
+            <div class="space-y-3">
+              <p class="font-label-caps text-label-caps uppercase text-on-surface-variant">Stock por variante</p>
+              {% for variante in producto.variants %}
+              <div class="flex items-center gap-2" data-variant="{{ variante.id }}">
+                <span class="w-10 font-code-sm text-code-sm text-on-surface-variant">{{ variante.size }}</span>
+                <span class="w-16 font-code-sm text-code-sm text-on-surface-variant truncate">{{ variante.color }}</span>
+                <span class="flex-1 font-code-sm text-code-sm text-outline truncate">{{ variante.sku }}</span>
+                <input type="number" min="0" value="{{ variante.stock }}" class="stock-input w-20 h-8 px-2 rounded bg-surface-container-high font-code-md text-code-md">
+                <button type="button" class="save-stock h-8 px-3 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors"
+                        data-product-id="{{ producto.id }}" data-variant-id="{{ variante.id }}">[reponer]</button>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{# ---------------- Panel: nuevo producto ---------------- #}
+<div id="new-panel" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm items-start justify-center p-4 overflow-auto">
+  <form id="new-product-form" class="w-full max-w-2xl border border-outline-variant rounded-xl bg-surface-container p-space-lg space-y-4 my-8">
+    <div class="flex items-center justify-between">
+      <p class="font-headline-sm text-headline-sm text-on-surface">NUEVO PRODUCTO</p>
+      <button type="button" id="close-new" class="p-1 text-on-surface-variant hover:text-error" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <label class="block sm:col-span-2">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Nombre</span>
+        <input name="name" required minlength="2" maxlength="120" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Categoría</span>
+        <input name="category" required minlength="2" maxlength="60" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Precio</span>
+        <input name="price" type="number" step="0.01" min="0.01" required class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-code-md text-code-md">
+      </label>
+      <label class="block sm:col-span-2">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Descripción</span>
+        <textarea name="description" rows="2" class="mt-1 w-full px-2 py-1 rounded bg-surface-container-high font-body-sm text-body-sm"></textarea>
+      </label>
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">image_url</span>
+        <input name="image_url" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+      </label>
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Slug <span class="text-outline">(opcional)</span></span>
+        <input name="slug" maxlength="140" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+      </label>
+    </div>
+
+    <div class="space-y-2">
+      <p class="font-label-caps text-label-caps uppercase text-on-surface-variant">Variantes</p>
+      <div id="variant-rows" class="space-y-2"></div>
+      <button type="button" id="add-variant" class="h-9 px-3 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">
+        + Agregar variante
+      </button>
+      <p id="new-feedback" class="hidden font-code-sm text-code-sm text-error" role="alert"></p>
+    </div>
+
+    <div class="flex gap-3">
+      <button type="submit" class="flex-1 h-11 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold uppercase flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">save</span> Guardar producto
+      </button>
+      <button type="button" id="cancel-new" class="flex-1 h-11 rounded border border-outline-variant font-label-caps text-label-caps uppercase text-on-surface-variant hover:text-on-surface">Cancelar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const feedback = document.getElementById('admin-feedback');
+
+    function notify(message, isError) {
+      feedback.textContent = '// ' + message;
+      feedback.className = 'mb-4 font-code-sm text-code-sm ' + (isError ? 'text-error' : 'text-primary-container');
+    }
+
+    // ---- activar / desactivar ----
+    document.querySelectorAll('.toggle-active').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const activo = button.dataset.next === 'true';
+        try {
+          await NK.request(`/api/products/${button.dataset.productId}`, 'PATCH', { is_active: activo });
+          window.location.reload();
+        } catch (error) {
+          notify(error.message, true);
+        }
+      });
+    });
+
+    // ---- abrir/cerrar fila de edición ----
+    document.querySelectorAll('.open-edit').forEach((button) => {
+      button.addEventListener('click', () => {
+        const row = document.querySelector(`[data-edit-row="${button.dataset.productId}"]`);
+        row.classList.toggle('hidden');
+      });
+    });
+
+    // ---- guardar datos del producto ----
+    document.querySelectorAll('.edit-product').forEach((form) => {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const payload = {};
+        for (const [key, value] of data.entries()) {
+          const limpio = String(value).trim();
+          if (key === 'price') { payload.price = limpio; continue; }
+          if (key === 'image_url' || key === 'description') { payload[key] = limpio || null; continue; }
+          if (limpio) payload[key] = limpio;
+        }
+        try {
+          await NK.request(`/api/products/${form.dataset.productId}`, 'PATCH', payload);
+          window.location.reload();
+        } catch (error) {
+          notify(error.message, true);
+        }
+      });
+    });
+
+    // ---- reponer stock ----
+    document.querySelectorAll('.save-stock').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const fila = button.closest('[data-variant]');
+        const stock = Number(fila.querySelector('.stock-input').value);
+        try {
+          await NK.request(
+            `/api/products/${button.dataset.productId}/variants/${button.dataset.variantId}/stock`,
+            'PATCH',
+            { stock }
+          );
+          notify('stock actualizado', false);
+        } catch (error) {
+          notify(error.message, true);
+        }
+      });
+    });
+
+    // ---- panel nuevo producto ----
+    const panel = document.getElementById('new-panel');
+    const rows = document.getElementById('variant-rows');
+
+    function variantRow() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'grid grid-cols-[1fr_1fr_1.4fr_80px_40px] gap-2';
+      wrapper.innerHTML = `
+        <input placeholder="Talla" data-field="size" class="h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+        <input placeholder="Color" data-field="color" class="h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+        <input placeholder="SKU" data-field="sku" class="h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+        <input placeholder="Stock" data-field="stock" type="number" min="0" value="0" class="h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+        <button type="button" class="h-9 rounded border border-outline-variant text-on-surface-variant hover:text-error" aria-label="Quitar variante">×</button>
+      `;
+      wrapper.querySelector('button').addEventListener('click', () => wrapper.remove());
+      rows.appendChild(wrapper);
+    }
+
+    document.getElementById('open-new').addEventListener('click', () => {
+      if (!rows.children.length) variantRow();
+      panel.classList.remove('hidden');
+      panel.classList.add('flex');
+    });
+
+    const closePanel = () => panel.classList.add('hidden');
+    document.getElementById('close-new').addEventListener('click', closePanel);
+    document.getElementById('cancel-new').addEventListener('click', closePanel);
+    document.getElementById('add-variant').addEventListener('click', variantRow);
+
+    document.getElementById('new-product-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const data = new FormData(form);
+      const nuevo = document.getElementById('new-feedback');
+
+      const payload = {
+        name: String(data.get('name') || '').trim(),
+        category: String(data.get('category') || '').trim(),
+        price: String(data.get('price') || '').trim(),
+        variants: [],
+      };
+      const descripcion = String(data.get('description') || '').trim();
+      const imagen = String(data.get('image_url') || '').trim();
+      const slug = String(data.get('slug') || '').trim();
+      if (descripcion) payload.description = descripcion;
+      if (imagen) payload.image_url = imagen;
+      if (slug) payload.slug = slug;
+
+      rows.querySelectorAll('div').forEach((row) => {
+        const valor = (campo) => row.querySelector(`[data-field="${campo}"]`).value.trim();
+        if (!valor('size') && !valor('color') && !valor('sku')) return;
+        payload.variants.push({
+          size: valor('size'),
+          color: valor('color'),
+          sku: valor('sku'),
+          stock: Number(valor('stock') || 0),
+        });
+      });
+
+      if (!payload.variants.length) {
+        nuevo.textContent = '// Debes agregar al menos una variante';
+        nuevo.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        await NK.request('/api/products', 'POST', payload);
+        window.location.reload();
+      } catch (error) {
+        nuevo.textContent = '// ' + error.message;
+        nuevo.classList.remove('hidden');
+      }
+    });
+  })();
+</script>
+{% endblock %}

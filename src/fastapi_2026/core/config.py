@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     debug: bool = False
     secret_key: str = "cambia_esto_por_una_clave_larga_y_segura"
 
+    # --- Tienda de ropa ---
+    shipping_cost: float = 5.00
+    free_shipping_threshold: float = 50.00
+
     model_config = SettingsConfigDict(
         env_file=str(ENV_FILE_PATH),
         env_file_encoding="utf-8",

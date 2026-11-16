@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}NightKids{% endblock %} // NIGHTKIDS</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  {# CSS compilado por Tailwind: los tokens viven en static/css/input.css #}
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/app.css') }}">
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col font-body-md text-body-md selection:bg-primary-container selection:text-surface-container-lowest">
+
+  {# ---- Franja de telemetria ---- #}
+  <div class="bg-surface-container-lowest border-b border-outline-variant px-margin-sm py-1 flex items-center justify-between font-code-sm text-code-sm text-on-surface-variant">
+    <span class="tracking-widest">NODE: NK-UNEFA-01 // TIENDA</span>
+    <div class="flex items-center gap-4">
+      <span class="hidden sm:inline tracking-widest" id="telemetry-clock">--:--:--</span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse-fast"></span>
+        STATUS: ONLINE
+      </span>
+    </div>
+  </div>
+
+  {# ---- Header ---- #}
+  <header class="sticky top-0 z-50 h-20 bg-background/95 backdrop-blur border-b border-outline-variant">
+    <div class="max-w-[1440px] mx-auto h-full px-margin flex items-center gap-6">
+
+      <a href="/tienda" class="flex items-center gap-2 shrink-0">
+        <img src="{{ url_for('static', path='images/logo-web.png') }}" alt="NightKids Logo" class="h-10 w-auto rounded bg-white p-0.5 object-contain">
+      </a>
+
+      <form action="/tienda" method="get" class="flex-1 max-w-xl relative" role="search">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+        <input
+          type="text"
+          name="q"
+          value="{{ filtros.q if filtros is defined and filtros.q else '' }}"
+          placeholder="Buscar prendas por nombre o SKU..."
+          aria-label="Buscar prendas por nombre o SKU"
+          class="w-full h-10 pl-10 pr-3 rounded bg-surface-container-high text-body-sm font-body-sm placeholder:text-on-surface-variant"
+        >
+      </form>
+
+      <nav class="hidden md:flex items-center gap-6 font-label-caps text-label-caps uppercase tracking-widest">
+        {% set ruta = request.url.path %}
+        <a href="/" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta == '/' }}">Inicio</a>
+        <a href="/tienda" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta.startswith('/tienda') }}">Tienda</a>
+        <a href="/pedidos" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta.startswith('/pedidos') }}">Mis pedidos</a>
+        {% if es_admin %}
+        <a href="/admin/productos" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta.startswith('/admin') }}">Admin</a>
+        {% endif %}
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="/carrito" class="relative p-2 rounded hover:bg-surface-container transition-colors" aria-label="Carrito">
+          <span class="material-symbols-outlined text-[22px]">shopping_bag</span>
+          {% if cart_count %}
+          <span class="absolute -top-0.5 -right-0.5 bg-primary-container text-on-primary-fixed font-code-sm text-[10px] font-bold h-4 min-w-4 px-1 rounded-full flex items-center justify-center">{{ cart_count }}</span>
+          {% endif %}
+        </a>
+        {% if usuario %}
+        <a href="/menu" class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center font-label-caps text-primary-container" title="{{ usuario.email or 'Mi cuenta' }}">
+          {{ (usuario.email or 'NK')[:2]|upper }}
+        </a>
+        {% else %}
+        <a href="/login" class="px-3 py-1.5 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">Entrar</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 w-full max-w-[1440px] mx-auto px-margin py-space-lg">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t border-outline-variant bg-surface-container-lowest">
+    <div class="max-w-[1440px] mx-auto px-margin py-4 flex flex-col sm:flex-row items-center justify-between gap-2 font-code-sm text-code-sm text-on-surface-variant">
+      <span>// NIGHTKIDS STORE — NO SE PROCESA PAGO EN LÍNEA</span>
+      <span>BUILD: MVP-2026 // FASTAPI + SUPABASE</span>
+    </div>
+  </footer>
+
+  <script>
+    window.NK = { cartCount: {{ cart_count|default(0) }} };
+  </script>
+  <script src="{{ url_for('static', path='/js/store.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

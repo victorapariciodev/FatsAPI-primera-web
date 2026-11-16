@@ -1,0 +1,173 @@
+{% extends "store/base.html" %}
+{% block title %}{{ producto.name }}{% endblock %}
+
+{% block content %}
+<nav class="font-code-sm text-code-sm text-on-surface-variant mb-6" aria-label="Ruta">
+  <a href="/" class="hover:text-primary-container">Inicio</a>
+  <span class="mx-1.5">&gt;</span>
+  <a href="/tienda" class="hover:text-primary-container">Tienda</a>
+  <span class="mx-1.5">&gt;</span>
+  <a href="/tienda?category={{ producto.category }}" class="hover:text-primary-container">{{ producto.category }}</a>
+  <span class="mx-1.5">&gt;</span>
+  <span class="text-on-surface">{{ producto.name }}</span>
+</nav>
+
+<div class="grid grid-cols-1 lg:grid-cols-[60fr_40fr] gap-space-xl">
+
+  {# ---------------- Galería: un solo image_url, sin thumbnails ---------------- #}
+  <div class="border border-outline-variant rounded-xl overflow-hidden bg-surface-container aspect-[4/5] max-h-[720px]">
+    {% if producto.image_url %}
+    <img src="{{ producto.image_url }}" alt="{{ producto.name }}" class="w-full h-full object-cover">
+    {% else %}
+    <div class="w-full h-full flex flex-col items-center justify-center gap-3 text-outline-variant">
+      <span class="material-symbols-outlined text-[64px]">checkroom</span>
+      <p class="font-code-sm text-code-sm">// SIN IMAGEN CARGADA</p>
+    </div>
+    {% endif %}
+  </div>
+
+  {# ---------------- Bloque de compra ---------------- #}
+  <div class="lg:sticky lg:top-28 self-start">
+    <div class="border border-outline-variant rounded-xl bg-surface-container p-space-lg space-y-6">
+
+      <div>
+        <p class="font-label-caps text-label-caps uppercase text-primary-container mb-2">{{ producto.category }}</p>
+        <h1 class="font-headline-lg text-headline-lg text-on-surface">{{ producto.name }}</h1>
+        <p class="font-code-md text-code-md text-on-surface-variant mt-2" id="sku-line">SKU: {{ variante_inicial.sku if variante_inicial else '—' }}</p>
+      </div>
+
+      <p class="font-code-lg text-code-lg text-primary-container">
+        ${{ "%.2f"|format(producto.price|float) }}
+        <span class="font-code-sm text-code-sm text-on-surface-variant">{{ producto.currency }}</span>
+      </p>
+
+      {% if producto.description %}
+      <p class="font-body-sm text-body-sm text-on-surface-variant">{{ producto.description }}</p>
+      {% endif %}
+
+      {# ---------------- Talla ---------------- #}
+      <div>
+        <p class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-3">Talla</p>
+        <div class="flex flex-wrap gap-2" id="variant-picker">
+          {% for variante in variantes %}
+          <button type="button"
+                  data-variant-id="{{ variante.id }}"
+                  data-stock="{{ variante.stock }}"
+                  data-sku="{{ variante.sku }}"
+                  data-color="{{ variante.color }}"
+                  data-size="{{ variante.size }}"
+                  {% if variante_inicial and variante.id == variante_inicial.id %}data-selected="true"{% endif %}
+                  {% if variante.stock == 0 %}disabled{% endif %}
+                  class="variant-chip min-w-[52px] px-3 py-2 rounded border font-code-md text-code-md transition-colors
+                         {{ 'border-outline-variant text-outline line-through cursor-not-allowed' if variante.stock == 0 else 'border-outline-variant text-on-surface hover:border-primary-container hover:text-primary-container' }}">
+            {{ variante.size }}
+            {% if variante.stock == 0 %}
+            <span class="block text-[9px] font-code-sm text-error leading-none mt-0.5">agotado</span>
+            {% endif %}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# ---------------- Color ---------------- #}
+      <div>
+        <p class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-3">Color</p>
+        <div class="flex flex-wrap gap-2" id="color-list">
+          {% for color in colores %}
+          <span class="px-2.5 py-1 rounded border border-outline-variant font-code-sm text-code-sm text-on-surface-variant">{{ color }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <p class="font-code-md text-code-md text-on-surface-variant" id="availability">
+        DISPONIBLES: {{ stock_inicial }} UNIDADES
+      </p>
+
+      {# ---------------- Cantidad ---------------- #}
+      <div>
+        <p class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-3">Cantidad</p>
+        <div class="inline-flex items-center border border-outline-variant rounded">
+          <button type="button" id="qty-minus" class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-primary-container" aria-label="Restar">−</button>
+          <input type="number" id="qty" value="1" min="1" max="{{ stock_inicial }}" class="w-14 h-10 text-center bg-transparent border-0 font-code-md text-code-md">
+          <button type="button" id="qty-plus" class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-primary-container" aria-label="Sumar">+</button>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <button type="button" id="add-to-cart"
+                class="w-full h-12 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold uppercase flex items-center justify-center gap-2 hover:bg-primary-fixed transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                {% if stock_inicial == 0 %}disabled{% endif %}>
+          <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+          Agregar al carrito
+        </button>
+
+        <a href="/tienda" class="w-full h-10 rounded border border-outline-variant font-label-caps text-label-caps uppercase text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors">
+          Volver a la tienda
+        </a>
+
+        <p id="pdp-feedback" class="hidden font-code-sm text-code-sm" role="status" aria-live="polite"></p>
+        {% if not usuario %}
+        <p class="font-code-sm text-code-sm text-tertiary-container">Inicia sesión para continuar</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const chips = Array.from(document.querySelectorAll('.variant-chip'));
+    const qty = document.getElementById('qty');
+    const availability = document.getElementById('availability');
+    const skuLine = document.getElementById('sku-line');
+    const feedback = document.getElementById('pdp-feedback');
+    let selected = chips.find((c) => c.dataset.selected === 'true' && !c.disabled)
+      || chips.find((c) => !c.disabled)
+      || null;
+
+    function paint() {
+      chips.forEach((chip) => {
+        const active = chip === selected;
+        chip.classList.toggle('border-primary-container', active);
+        chip.classList.toggle('text-primary-container', active);
+      });
+      if (!selected) return;
+      const stock = Number(selected.dataset.stock);
+      qty.max = stock;
+      if (Number(qty.value) > stock) qty.value = stock || 1;
+      availability.textContent = 'DISPONIBLES: ' + stock + ' UNIDADES';
+      skuLine.textContent = 'SKU: ' + selected.dataset.sku;
+      document.getElementById('add-to-cart').disabled = stock === 0;
+    }
+
+    chips.forEach((chip) => {
+      if (chip.disabled) return;
+      chip.addEventListener('click', () => { selected = chip; paint(); });
+    });
+
+    document.getElementById('qty-minus').addEventListener('click', () => {
+      qty.value = Math.max(1, Number(qty.value) - 1);
+    });
+    document.getElementById('qty-plus').addEventListener('click', () => {
+      qty.value = Math.min(Number(qty.max || 1), Number(qty.value) + 1);
+    });
+
+    document.getElementById('add-to-cart').addEventListener('click', async () => {
+      if (!selected) return;
+      feedback.className = 'font-code-sm text-code-sm text-on-surface-variant';
+      feedback.textContent = '// enviando...';
+      try {
+        await NK.addToCart(selected.dataset.variantId, Number(qty.value));
+        window.location.href = '/carrito';
+      } catch (error) {
+        feedback.className = 'font-code-sm text-code-sm text-error';
+        feedback.textContent = error.message;
+      }
+    });
+
+    paint();
+  })();
+</script>
+{% endblock %}
