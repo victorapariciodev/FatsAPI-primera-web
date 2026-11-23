@@ -14,6 +14,7 @@ from fastapi_2026.api.routes import (
     products,
     profile,
     store_pages,
+    videos,
 )
 
 app = FastAPI(title="Tienda de ropa")
@@ -40,6 +41,8 @@ app.include_router(cart.router)
 app.include_router(orders.router)
 app.include_router(store_pages.router)
 app.include_router(health.router)
+app.include_router(videos.router)
+app.include_router(videos.admin_router)
 
 # Errores de dominio -> JSON con su status correcto
 register_error_handlers(app)

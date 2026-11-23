@@ -240,6 +240,14 @@ class FakeQuery:
                 for key, value in self._db.defaults.get(self._table, {}).items():
                     row.setdefault(key, value)
                 row.setdefault("id", self._db.next_id(self._table))
+                for columna in self._db.uniques.get(self._table, ()):
+                    if row.get(columna) is not None and any(
+                        fila.get(columna) == row[columna] for fila in table
+                    ):
+                        raise RuntimeError(
+                            f'duplicate key value violates unique constraint '
+                            f'"{self._table}_{columna}_key"'
+                        )
                 table.append(row)
                 created.append(deepcopy(row))
             return FakeResponse(created)
@@ -300,6 +308,12 @@ class FakeDB:
             "products": {"currency": "USD", "is_active": True},
             "product_variants": {"stock": 0},
             "orders": {"status": "pending"},
+        }
+        # Unicos reales del DDL: sin esto el fake dejaria pasar slugs
+        # duplicados y el servicio no podria traducir el conflicto.
+        self.uniques: dict[str, tuple[str, ...]] = {
+            "products": ("slug",),
+            "videos": ("slug",),
         }
         self._ids = count(1)
 

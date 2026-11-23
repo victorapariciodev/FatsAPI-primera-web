@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 
 from fastapi_2026.api.db import get_db
 from fastapi_2026.api.deps import get_current_user, get_optional_user
+from fastapi_2026.core.config import settings
 from fastapi_2026.main import app
 
 from .fakes import FakeDB
@@ -72,6 +73,49 @@ VARIANTS = [
     {"id": "v5", "product_id": "p4", "size": "XL", "color": "grafito", "sku": "CHA-IMP-XL", "stock": 2, "created_at": "5"},
 ]
 
+VIDEOS = [
+    {
+        "id": "vid1",
+        "slug": "charla-fastapi-en-capas",
+        "title": "Charla: FastAPI en capas",
+        "description": "Como separar schemas, servicios y rutas.",
+        "categoria": "charla",
+        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "poster_url": None,
+        "duration_label": "18:42",
+        "is_active": True,
+        "published_at": "2026-03-01T10:00:00Z",
+    },
+    {
+        "id": "vid2",
+        "slug": "taller-tailwind",
+        "title": "Taller: tokens de diseño",
+        "description": None,
+        "categoria": "taller",
+        "video_url": (
+            f"https://{settings.supabase_url.split('//')[1].split('/')[0]}"
+            "/storage/v1/object/public/videos/taller.mp4"
+        ),
+        "poster_url": None,
+        "duration_label": "07:15",
+        "is_active": True,
+        "published_at": "2026-04-02T10:00:00Z",
+    },
+    {
+        "id": "vid3",
+        "slug": "demo-inactivo",
+        "title": "Demo retirada",
+        "description": None,
+        "categoria": "demo",
+        "video_url": "https://youtu.be/abcdefghijk",
+        "poster_url": None,
+        "duration_label": None,
+        "is_active": False,
+        "published_at": "2026-05-03T10:00:00Z",
+    },
+]
+
+
 ORDERS = [
     {
         "id": "o1",
@@ -120,12 +164,17 @@ def seed() -> dict[str, list[dict[str, Any]]]:
         "cart_items": [],
         "orders": ORDERS,
         "order_items": ORDER_ITEMS,
+        "videos": VIDEOS,
     }
 
 
 @pytest.fixture
 def db() -> FakeDB:
-    return FakeDB(seed())
+    base = FakeDB(seed())
+    # La landing registra una visita en cada GET /. Sin este handler el fake
+    # lanzaria AssertionError y la portada se caeria en los tests.
+    base.rpc_handlers["register_landing_visit"] = lambda params: 42
+    return base
 
 
 @pytest.fixture
