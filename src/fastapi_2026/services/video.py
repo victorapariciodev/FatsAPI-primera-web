@@ -34,6 +34,10 @@ _HOSTS_YOUTUBE = {
     "www.youtube-nocookie.com",
 }
 PREFIJO_STORAGE = "/storage/v1/object/public/"
+# Videos servidos por el propio FastAPI desde static/videos/. Se acepta la
+# ruta relativa para que funcione igual en localhost y detras de un proxy.
+PREFIJO_LOCAL = "/static/videos/"
+EXTENSIONES_VIDEO = {".mp4", ".webm", ".ogg", ".mov", ".m4v"}
 
 
 def _slugify(value: str) -> str:
@@ -44,15 +48,32 @@ def _slugify(value: str) -> str:
 def resolver_video(url: str) -> dict[str, str | None]:
     """Traduce una URL permitida a ``(kind, src, thumb_url)``.
 
-    Solo dos formatos:
+    Tres formatos:
       * YouTube (watch / youtu.be / embed) -> iframe de youtube-nocookie;
-      * archivo publico de ESTE proyecto de Supabase Storage -> <video>.
+      * archivo publico de ESTE proyecto de Supabase Storage -> <video>;
+      * ruta local /static/videos/archivo.mp4 -> <video> servido por FastAPI.
 
     Todo lo demas se rechaza con ValidationError (422). No se acepta HTTP,
     ni dominios parecidos (`youtube.com.evil.tld`), ni rutas de storage de
-    otro proyecto.
+    otro proyecto, ni rutas locales con `..` o extension rara.
     """
     valor = (url or "").strip()
+
+    if valor.startswith(PREFIJO_LOCAL):
+        nombre = valor[len(PREFIJO_LOCAL) :]
+        extension = "." + nombre.rsplit(".", 1)[-1].lower() if "." in nombre else ""
+        if (
+            not nombre
+            or "/" in nombre
+            or "\\" in nombre
+            or ".." in nombre
+            or "?" in nombre
+            or "#" in nombre
+            or extension not in EXTENSIONES_VIDEO
+        ):
+            raise ValidationError("La ruta local del video no es valida.")
+        return {"kind": "file", "src": valor, "thumb_url": None}
+
     try:
         parsed = urlparse(valor)
     except Exception as exc:  # noqa: BLE001 - una URL rota es entrada invalida
@@ -88,8 +109,8 @@ def resolver_video(url: str) -> dict[str, str | None]:
         return {"kind": "file", "src": valor, "thumb_url": None}
 
     raise ValidationError(
-        "Solo se admiten videos de YouTube o archivos publicos de este "
-        "proyecto de Supabase Storage."
+        "Solo se admiten videos de YouTube, archivos publicos de este "
+        "proyecto de Supabase Storage o rutas /static/videos/archivo.mp4."
     )
 
 

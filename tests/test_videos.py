@@ -40,6 +40,15 @@ class TestResolutorDeUrls:
 
         assert resultado == {"kind": "file", "src": ARCHIVO, "thumb_url": None}
 
+    def test_video_local_en_static_videos(self):
+        resultado = resolver_video("/static/videos/taller.mp4")
+
+        assert resultado == {
+            "kind": "file",
+            "src": "/static/videos/taller.mp4",
+            "thumb_url": None,
+        }
+
     @pytest.mark.parametrize(
         "url",
         [
@@ -50,6 +59,10 @@ class TestResolutorDeUrls:
             "https://otro-proyecto.supabase.co/storage/v1/object/public/videos/x.mp4",
             f"https://{HOST}/storage/v1/object/sign/videos/x.mp4",  # privado
             "javascript:alert(1)",
+            "/static/videos/../secreto.mp4",   # path traversal
+            "/static/videos/sub/carpeta.mp4",  # sin subcarpetas
+            "/static/videos/archivo.html",     # extension no video
+            "/static/videos/x.mp4?evil=1",     # query inyectada
             "",
         ],
     )
