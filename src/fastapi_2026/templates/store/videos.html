@@ -1,0 +1,120 @@
+{% extends "store/base.html" %}
+{% block title %}Stream HUD · Videos{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+  <div>
+    <p class="font-code-sm text-code-sm text-secondary tracking-widest uppercase mb-1">STREAM HUD // VIDEO ARCHIVE</p>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">VIDEOS DE LA COMUNIDAD</h1>
+    <p class="text-sm text-on-surface-variant mt-1">Charlas, talleres y demos del colectivo. Reproducción directa, sin registros.</p>
+  </div>
+  <div class="flex items-center gap-3">
+    <span class="px-3 py-1 rounded border border-outline-variant font-status-badge text-status-badge text-primary-container uppercase">
+      {{ videos.total }} VIDEOS // {{ videos.categorias|length }} CATEGORÍAS
+    </span>
+    <a href="/#videos" class="px-4 h-10 inline-flex items-center gap-2 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span> Landing
+    </a>
+  </div>
+</div>
+
+<p id="video-feedback" class="hidden mb-4 font-code-sm text-code-sm" role="alert"></p>
+
+{% if videos.categorias %}
+<form action="/videos" method="get" class="mb-6 flex flex-wrap items-center gap-3">
+  <select name="categoria" class="h-10 px-3 rounded bg-surface-container-high font-code-sm text-code-sm" onchange="this.form.submit()">
+    <option value="">Todas las categorías</option>
+    {% for categoria in videos.categorias %}
+    <option value="{{ categoria }}" {{ 'selected' if categoria == categoria_activa }}>{{ categoria }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="h-10 px-4 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">Filtrar</button>
+</form>
+{% endif %}
+
+{% if videos['items'] %}
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+  {% for video in videos['items'] %}
+  <article class="group bg-surface-container rounded-xl overflow-hidden border border-surface-bright/30 hover:border-primary-container/50 transition-all shadow-lg">
+    <button type="button" data-video-open="stream-{{ video.slug }}" aria-label="Reproducir {{ video.title }}"
+            class="relative block w-full aspect-video overflow-hidden bg-surface-container-high cursor-pointer text-left">
+      {% if video.thumb_url %}
+      <img src="{{ video.thumb_url }}" alt="" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+      {% else %}
+      <span class="w-full h-full flex items-center justify-center text-outline-variant">
+        <span class="material-symbols-outlined text-5xl">play_circle</span>
+      </span>
+      {% endif %}
+      <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <span class="w-14 h-14 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-[0_0_20px_rgba(0,240,255,0.5)]">
+          <span class="material-symbols-outlined text-[28px]">play_arrow</span>
+        </span>
+      </span>
+      {% if video.duration_label %}
+      <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-[#0a0a0f]/90 font-code-sm text-code-sm text-on-surface">{{ video.duration_label }}</span>
+      {% endif %}
+    </button>
+
+    <div class="p-5 flex flex-col gap-2">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <span class="px-2 py-0.5 rounded bg-secondary-container/40 font-status-badge text-status-badge uppercase text-secondary-fixed">{{ video.categoria }}</span>
+        {% if video.published_at %}<span class="font-code-sm text-code-sm text-outline">{{ video.published_at[:10] }}</span>{% endif %}
+      </div>
+      <h2 class="text-base font-bold text-on-surface leading-snug">{{ video.title }}</h2>
+      {% if video.description %}<p class="text-xs text-on-surface-variant leading-relaxed">{{ video.description }}</p>{% endif %}
+      <button type="button" data-video-open="stream-{{ video.slug }}" class="mt-2 inline-flex items-center gap-2 self-start font-code-md text-code-md text-primary-container hover:underline uppercase">
+        <span class="material-symbols-outlined text-[18px]">play_circle</span> Ver video
+      </button>
+    </div>
+  </article>
+
+  <dialog id="stream-{{ video.slug }}" data-video-dialog class="w-[min(920px,94vw)] p-0 rounded-xl border border-surface-bright/50 bg-[#0a0a0f] shadow-2xl backdrop:bg-black/80">
+    <div class="flex items-center justify-between gap-4 p-3 border-b border-surface-bright/30">
+      <p class="font-code-md text-code-md text-on-surface truncate">{{ video.title }}</p>
+      <button type="button" data-video-close class="p-1 text-on-surface-variant hover:text-error" aria-label="Cerrar video">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="aspect-video w-full bg-black">
+      {% if video.embed_kind == 'youtube' %}
+      <iframe class="w-full h-full" src="{{ video.src }}" title="{{ video.title }}" loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      {% else %}
+      <video class="w-full h-full" src="{{ video.src }}" controls preload="none" {% if video.thumb_url %}poster="{{ video.thumb_url }}"{% endif %}></video>
+      {% endif %}
+    </div>
+  </dialog>
+  {% endfor %}
+</div>
+{% else %}
+<div class="rounded-xl border border-outline-variant bg-surface-container-low p-10 text-center">
+  <span class="material-symbols-outlined text-5xl text-outline-variant">movie</span>
+  <p class="mt-3 font-code-md text-code-md text-on-surface-variant">Todavía no hay videos publicados en esta categoría.</p>
+  <p class="mt-1 text-xs text-outline">Cuando el admin cargue los links de YouTube, aparecen acá.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Mismo patron que landing.js: el src ya viene validado del servidor.
+  document.addEventListener('click', (event) => {
+    const abrir = event.target.closest('[data-video-open]');
+    if (abrir) {
+      const dialog = document.getElementById(abrir.dataset.videoOpen);
+      if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
+      return;
+    }
+    const cerrar = event.target.closest('[data-video-close]');
+    if (cerrar) {
+      const dialog = cerrar.closest('dialog');
+      if (dialog) dialog.close();
+      return;
+    }
+    if (event.target instanceof HTMLDialogElement && event.target.hasAttribute('data-video-dialog')) {
+      event.target.close();
+    }
+  });
+</script>
+{% endblock %}

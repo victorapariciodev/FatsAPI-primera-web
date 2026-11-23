@@ -114,6 +114,12 @@ class TestContratoLanding:
         assert 'href="#videos"' in html
         assert 'id="videos"' in html
 
+    def test_la_landing_lleva_a_la_pagina_de_videos(self, anon_client):
+        """CTA del hero + boton de la seccion: dos entradas reales a /videos."""
+        html = anon_client.get("/").text
+
+        assert html.count('href="/videos"') >= 2
+
 
 class TestPanelAdminDeVideos:
     def test_admin_ve_el_panel(self, admin_client):

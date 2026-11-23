@@ -1476,6 +1476,9 @@
   .p-8 {
     padding: calc(var(--spacing) * 8);
   }
+  .p-10 {
+    padding: calc(var(--spacing) * 10);
+  }
   .p-gutter {
     padding: var(--spacing-gutter);
   }

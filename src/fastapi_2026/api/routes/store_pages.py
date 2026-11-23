@@ -24,6 +24,7 @@ from fastapi_2026.core.templates import templates
 from fastapi_2026.services.cart import CartService
 from fastapi_2026.services.order import OrderService
 from fastapi_2026.services.product import ProductService
+from fastapi_2026.services.video import VideoService
 
 router = APIRouter(tags=["Tienda (páginas)"])
 
@@ -123,6 +124,39 @@ def catalogo(
                 "sort": orden,
                 "in_stock": in_stock,
             },
+        ),
+    )
+
+
+@router.get("/videos", summary="Stream HUD: videos de la comunidad (HTML)")
+def videos_page(
+    request: Request,
+    categoria: str | None = None,
+    db: Client = Depends(get_db),
+    user: Optional[dict] = Depends(get_optional_user),
+) -> Any:
+    """Pagina de videos.
+
+    Usa el MISMO VideoService que /api/videos: una sola regla, dos
+    transportes. Si la base falla se degrada a estado vacio en vez de
+    tumbar la pagina, igual que la landing.
+    """
+    servicio = VideoService(db)
+    try:
+        lista = servicio.list_videos(categoria=categoria)
+    except Exception as exc:  # noqa: BLE001 - pagina publica
+        print(f"🚨 No se pudieron leer los videos del Stream HUD: {exc}")
+        lista = {"items": [], "total": 0, "categorias": []}
+
+    return templates.TemplateResponse(
+        request=request,
+        name="store/videos.html",
+        context=_context(
+            user,
+            db,
+            videos=lista,
+            categoria_activa=categoria or "",
+            filtros={"categoria": categoria or ""},
         ),
     )
 
