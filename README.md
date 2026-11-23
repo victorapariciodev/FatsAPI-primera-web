@@ -26,10 +26,22 @@ uv sync
 
 👉 **No hace falta activar el entorno.** `uv` lo gestiona solo.
 
+### 2.5 Configuración (.env)
+
+El repo **no** incluye `.env` (tiene secretos y fue sacado del historial). Si acabas de clonar, copia la plantilla y rellénala:
+
+```powershell
+Copy-Item .env.example src\fastapi_2026\.env
+```
+
+`config.py` busca el archivo exactamente en `src/fastapi_2026/.env`, no en la raíz.
+
 ### 3. Arranca el servidor de desarrollo
 
-```bash
-uv run fastapi dev app.py
+```powershell
+# Windows: sin esto config.py revienta con UnicodeEncodeError al imprimir el ✅
+$env:PYTHONIOENCODING="utf-8"
+uv run uvicorn fastapi_2026.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 Abre tu navegador en:
@@ -67,8 +79,10 @@ El servidor **recarga automáticamente** cada vez que guardes cambios en el cód
 
 ## ✅ TL;DR — Los 3 pasos imprescindibles
 
-```bash
-uv sync                                                # 1. Instalar todo
-uv run fastapi dev src/fastapi_2026/main.py          # 2. Arrancar
-# 3. Abrir http://127.0.0.1:8000 en el navegador
+```powershell
+uv sync                                                                  # 1. Instalar todo
+$env:PYTHONIOENCODING="utf-8"                                           # 2. Windows: evitar UnicodeEncodeError
+Copy-Item .env.example src\fastapi_2026\.env                            # 3. Solo si es un clone nuevo
+uv run uvicorn fastapi_2026.main:app --reload --host 127.0.0.1 --port 8000  # 4. Arrancar
+# Abrir http://127.0.0.1:8000 en el navegador
 ```
