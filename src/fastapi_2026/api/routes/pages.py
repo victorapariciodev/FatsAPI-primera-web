@@ -7,14 +7,16 @@ Aqui queda accesible para editar los datos cuando el usuario quiera, y sigue
 cayendo a los datos del JWT si la base no responde.
 """
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from supabase import Client
 
 from fastapi_2026.api.db import get_db
-from fastapi_2026.api.deps import get_optional_user
+from fastapi_2026.api.deps import get_optional_user, user_is_admin
 from fastapi_2026.core.templates import templates
 from fastapi_2026.services.onboarding import debe_hacer_onboarding, marcar_visto
+from fastapi_2026.services.product import ProductService
+from fastapi_2026.services.video import VideoService
 
 router = APIRouter()
 
@@ -68,11 +70,45 @@ def _contexto_perfil(db: Client, user_id: str, claims: dict) -> dict:
 
 
 @router.get("/")
-async def home(request: Request):
+async def home(
+    request: Request,
+    categoria: str | None = None,
+    db: Client = Depends(get_db),
+):
+    """Landing publica con datos reales.
+
+    Cada bloque se calcula por separado y degrada por separado: una tabla
+    caida no puede tumbar la portada ni convertir una metrica en un numero
+    inventado. Aqui vivia un HTML estatico con '0ms' y 'STATUS: STANDBY'.
+    """
+    servicio = VideoService(db)
+
+    try:
+        videos = servicio.list_videos(categoria=categoria)
+    except Exception as exc:  # noqa: BLE001 - la landing es publica
+        print(f"🚨 No se pudieron leer los videos de la landing: {exc}")
+        videos = {"items": [], "total": 0, "categorias": []}
+
+    visitas = servicio.registrar_visita()
+
+    try:
+        productos_activos = ProductService(db).list_products(
+            page=1, page_size=1
+        )["total"]
+    except Exception as exc:  # noqa: BLE001 - degrade, nunca un numero falso
+        print(f"🚨 No se pudo contar el catalogo para la landing: {exc}")
+        productos_activos = None
+
     return templates.TemplateResponse(
         request=request,
         name="landing.html",
-        context={"titulo": "Inicio"},
+        context={
+            "titulo": "Inicio",
+            "videos": videos,
+            "categoria_activa": categoria or "",
+            "visitas": visitas,
+            "productos_activos": productos_activos,
+        },
     )
 
 
@@ -128,6 +164,33 @@ async def saltar_bienvenida(
     except Exception as exc:  # noqa: BLE001 - no se bloquea al usuario por esto
         print(f"🚨 No se pudo marcar el paso como visto: {exc}")
     return RedirectResponse(url="/tienda", status_code=303)
+
+
+@router.get("/admin/videos", summary="Gestion de videos de la landing (HTML, admin)")
+async def admin_videos(
+    request: Request,
+    categoria: str | None = None,
+    db: Client = Depends(get_db),
+    user: dict | None = Depends(get_optional_user),
+):
+    if user is None:
+        return IR_AL_LOGIN
+    if not user_is_admin(user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Se requiere rol de administrador.",
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="store/admin_videos.html",
+        context={
+            "videos": VideoService(db).list_videos(
+                categoria=categoria, include_inactive=True, limit=60
+            ),
+            "categoria_activa": categoria or "",
+        },
+    )
 
 
 @router.get("/debug-menu")

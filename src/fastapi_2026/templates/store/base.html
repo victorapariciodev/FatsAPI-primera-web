@@ -53,7 +53,8 @@
         <a href="/tienda" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta.startswith('/tienda') }}">Tienda</a>
         <a href="/pedidos" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta.startswith('/pedidos') }}">Mis pedidos</a>
         {% if es_admin %}
-        <a href="/admin/productos" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta.startswith('/admin') }}">Admin</a>
+        <a href="/admin/productos" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta == '/admin/productos' }}">Admin</a>
+        <a href="/admin/videos" class="hover:text-primary-container transition-colors {{ 'text-primary-container' if ruta == '/admin/videos' }}">Videos</a>
         {% endif %}
       </nav>
 

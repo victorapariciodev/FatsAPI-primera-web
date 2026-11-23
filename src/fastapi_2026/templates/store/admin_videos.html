@@ -1,0 +1,239 @@
+{% extends "store/base.html" %}
+{% block title %}Admin · Videos{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+  <div>
+    <p class="font-code-sm text-code-sm text-on-surface-variant mb-1">ADMIN // ROLE: ADMIN</p>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">GESTIÓN DE VIDEOS</h1>
+  </div>
+  <div class="flex items-center gap-4">
+    <p class="font-code-md text-code-md text-on-surface-variant">{{ videos.total }} VIDEOS EN LA LANDING</p>
+    <button type="button" id="open-new"
+            class="px-4 h-10 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold uppercase flex items-center gap-2 hover:bg-primary-fixed transition-colors">
+      <span class="material-symbols-outlined text-[18px]">add</span> Nuevo video
+    </button>
+  </div>
+</div>
+
+<p id="admin-feedback" class="hidden mb-4 font-code-sm text-code-sm" role="alert"></p>
+
+<form action="/admin/videos" method="get" class="mb-4 flex flex-wrap items-center gap-3">
+  <select name="categoria" class="h-10 px-3 rounded bg-surface-container-high font-code-sm text-code-sm" onchange="this.form.submit()">
+    <option value="">Todas las categorías</option>
+    {% for categoria in videos.categorias %}
+    <option value="{{ categoria }}" {{ 'selected' if categoria == categoria_activa }}>{{ categoria }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="h-10 px-4 rounded border border-outline-variant font-label-caps text-label-caps uppercase hover:border-primary-container hover:text-primary-container transition-colors">Filtrar</button>
+</form>
+
+<div class="border border-outline-variant rounded-xl overflow-hidden bg-surface-container">
+  <table class="w-full text-left">
+    <thead class="bg-surface-container-high border-b border-outline-variant">
+      <tr class="font-label-caps text-label-caps uppercase text-on-surface-variant">
+        <th class="px-3 py-2">Video</th>
+        <th class="px-3 py-2">Categoría</th>
+        <th class="px-3 py-2">Tipo</th>
+        <th class="px-3 py-2">Duración</th>
+        <th class="px-3 py-2">Estado</th>
+        <th class="px-3 py-2 text-right">Acciones</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-outline-variant">
+      {% for video in videos['items'] %}
+      <tr class="align-top {{ 'opacity-60' if not video.is_active }}">
+        <td class="px-3 py-3 font-body-sm text-body-sm text-on-surface">
+          {{ video.title }}
+          <span class="block font-code-sm text-code-sm text-outline truncate max-w-xs">{{ video.video_url if video.video_url else video.src }}</span>
+        </td>
+        <td class="px-3 py-3 font-code-sm text-code-sm text-on-surface-variant">{{ video.categoria }}</td>
+        <td class="px-3 py-3 font-code-sm text-code-sm text-on-surface-variant">{{ 'YouTube' if video.embed_kind == 'youtube' else 'Storage' }}</td>
+        <td class="px-3 py-3 font-code-md text-code-md text-on-surface">{{ video.duration_label or '—' }}</td>
+        <td class="px-3 py-3">
+          <span class="px-2 py-0.5 rounded border font-status-badge text-status-badge uppercase {{ 'border-primary-container/60 text-primary-container' if video.is_active else 'border-outline-variant text-outline' }}">
+            {{ 'Activo' if video.is_active else 'Inactivo' }}
+          </span>
+        </td>
+        <td class="px-3 py-3">
+          <div class="flex items-center justify-end gap-2 font-code-sm text-code-sm">
+            <button type="button" class="toggle-active px-2 py-1 rounded border border-outline-variant hover:border-primary-container hover:text-primary-container transition-colors"
+                    data-video-id="{{ video.id }}" data-next="{{ 'false' if video.is_active else 'true' }}">
+              [{{ 'desactivar' if video.is_active else 'activar' }}]
+            </button>
+            <button type="button" class="open-edit px-2 py-1 rounded border border-outline-variant hover:border-primary-container hover:text-primary-container transition-colors"
+                    data-video-id="{{ video.id }}">[editar]</button>
+            <button type="button" class="delete-video px-2 py-1 rounded border border-outline-variant hover:border-error hover:text-error transition-colors"
+                    data-video-id="{{ video.id }}">[borrar]</button>
+          </div>
+        </td>
+      </tr>
+      <tr class="hidden bg-surface-container-low" data-edit-row="{{ video.id }}">
+        <td colspan="6" class="px-3 py-4">
+          <form class="edit-video grid grid-cols-1 sm:grid-cols-2 gap-3" data-video-id="{{ video.id }}">
+            <label class="block sm:col-span-2">
+              <span class="font-code-sm text-code-sm text-on-surface-variant">Título</span>
+              <input name="title" value="{{ video.title }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-body-sm text-body-sm">
+            </label>
+            <label class="block">
+              <span class="font-code-sm text-code-sm text-on-surface-variant">Categoría</span>
+              <input name="categoria" value="{{ video.categoria }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+            </label>
+            <label class="block">
+              <span class="font-code-sm text-code-sm text-on-surface-variant">Duración (mm:ss)</span>
+              <input name="duration_label" value="{{ video.duration_label or '' }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+            </label>
+            <label class="block sm:col-span-2">
+              <span class="font-code-sm text-code-sm text-on-surface-variant">URL (YouTube o Supabase Storage)</span>
+              <input name="video_url" value="{{ video.video_url }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+            </label>
+            <label class="block sm:col-span-2">
+              <span class="font-code-sm text-code-sm text-on-surface-variant">Poster / miniatura (opcional)</span>
+              <input name="poster_url" value="{{ video.poster_url or '' }}" class="mt-1 w-full h-9 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+            </label>
+            <label class="block sm:col-span-2">
+              <span class="font-code-sm text-code-sm text-on-surface-variant">Descripción</span>
+              <textarea name="description" rows="2" class="mt-1 w-full px-2 py-1 rounded bg-surface-container-high font-body-sm text-body-sm">{{ video.description or '' }}</textarea>
+            </label>
+            <div class="sm:col-span-2 flex gap-3">
+              <button type="submit" class="h-9 px-4 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps uppercase">Guardar video</button>
+              <button type="button" class="cancel-edit h-9 px-4 rounded border border-outline-variant font-label-caps text-label-caps uppercase text-on-surface-variant">Cancelar</button>
+            </div>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div id="new-panel" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm items-start justify-center p-4 overflow-auto">
+  <form id="new-video-form" class="w-full max-w-2xl border border-outline-variant rounded-xl bg-surface-container p-space-lg space-y-4 my-8">
+    <div class="flex items-center justify-between">
+      <p class="font-headline-sm text-headline-sm text-on-surface">NUEVO VIDEO</p>
+      <button type="button" id="close-new" class="p-1 text-on-surface-variant hover:text-error" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <label class="block sm:col-span-2">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Título</span>
+        <input name="title" required minlength="2" maxlength="160" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-body-sm text-body-sm">
+      </label>
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Categoría</span>
+        <input name="categoria" required minlength="2" maxlength="60" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+      </label>
+      <label class="block">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Duración (mm:ss)</span>
+        <input name="duration_label" maxlength="12" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+      </label>
+      <label class="block sm:col-span-2">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">URL (YouTube o Supabase Storage)</span>
+        <input name="video_url" required maxlength="500" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+      </label>
+      <label class="block sm:col-span-2">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Poster / miniatura (opcional)</span>
+        <input name="poster_url" maxlength="500" class="mt-1 w-full h-10 px-2 rounded bg-surface-container-high font-code-sm text-code-sm">
+      </label>
+      <label class="block sm:col-span-2">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Descripción</span>
+        <textarea name="description" rows="2" class="mt-1 w-full px-2 py-1 rounded bg-surface-container-high font-body-sm text-body-sm"></textarea>
+      </label>
+    </div>
+    <p id="new-feedback" class="hidden font-code-sm text-code-sm text-error" role="alert"></p>
+    <div class="flex gap-3">
+      <button type="submit" class="flex-1 h-11 rounded bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold uppercase">Guardar video</button>
+      <button type="button" id="cancel-new" class="flex-1 h-11 rounded border border-outline-variant font-label-caps text-label-caps uppercase text-on-surface-variant">Cancelar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const feedback = document.getElementById('admin-feedback');
+
+    function notify(message, isError) {
+      feedback.textContent = '// ' + message;
+      feedback.className = 'mb-4 font-code-sm text-code-sm ' + (isError ? 'text-error' : 'text-primary-container');
+    }
+
+    document.querySelectorAll('.toggle-active').forEach((button) => {
+      button.addEventListener('click', async () => {
+        try {
+          await NK.request(`/api/admin/videos/${button.dataset.videoId}`, 'PATCH', { is_active: button.dataset.next === 'true' });
+          window.location.reload();
+        } catch (error) { notify(error.message, true); }
+      });
+    });
+
+    document.querySelectorAll('.open-edit').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelector(`[data-edit-row="${button.dataset.videoId}"]`).classList.toggle('hidden');
+      });
+    });
+
+    document.querySelectorAll('.cancel-edit').forEach((button) => {
+      button.addEventListener('click', () => {
+        button.closest('tr').classList.add('hidden');
+      });
+    });
+
+    document.querySelectorAll('.edit-video').forEach((form) => {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const datos = new FormData(form);
+        const payload = {};
+        for (const [clave, valor] of datos.entries()) {
+          const limpio = String(valor).trim();
+          payload[clave] = limpio || null;
+        }
+        try {
+          await NK.request(`/api/admin/videos/${form.dataset.videoId}`, 'PATCH', payload);
+          window.location.reload();
+        } catch (error) { notify(error.message, true); }
+      });
+    });
+
+    document.querySelectorAll('.delete-video').forEach((button) => {
+      button.addEventListener('click', async () => {
+        if (!window.confirm('¿Borrar este video de la landing?')) return;
+        try {
+          await NK.request(`/api/admin/videos/${button.dataset.videoId}`, 'DELETE');
+          window.location.reload();
+        } catch (error) { notify(error.message, true); }
+      });
+    });
+
+    const panel = document.getElementById('open-new');
+    const overlay = document.getElementById('new-panel');
+    const abrir = () => { overlay.classList.remove('hidden'); overlay.classList.add('flex'); };
+    const cerrar = () => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); };
+    document.getElementById('open-new').addEventListener('click', abrir);
+    document.getElementById('close-new').addEventListener('click', cerrar);
+    document.getElementById('cancel-new').addEventListener('click', cerrar);
+
+    document.getElementById('new-video-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const datos = new FormData(event.currentTarget);
+      const payload = {};
+      for (const [clave, valor] of datos.entries()) {
+        const limpio = String(valor).trim();
+        if (clave === 'title' || clave === 'categoria' || clave === 'video_url' || limpio) {
+          payload[clave] = limpio || null;
+        }
+      }
+      const aviso = document.getElementById('new-feedback');
+      try {
+        await NK.request('/api/admin/videos', 'POST', payload);
+        window.location.reload();
+      } catch (error) {
+        aviso.textContent = '// ' + error.message;
+        aviso.classList.remove('hidden');
+      }
+    });
+  })();
+</script>
+{% endblock %}

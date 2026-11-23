@@ -21,6 +21,8 @@ from fastapi_2026.main import app
 RAIZ = Path(__file__).resolve().parents[1]
 TEMPLATES = RAIZ / "src" / "fastapi_2026" / "templates" / "store"
 STORE_JS = RAIZ / "src" / "fastapi_2026" / "static" / "js" / "store.js"
+LANDING = RAIZ / "src" / "fastapi_2026" / "templates" / "landing.html"
+LANDING_JS = RAIZ / "src" / "fastapi_2026" / "static" / "js" / "landing.js"
 
 PARAM_LITERAL = re.compile(r"\$\{[^}]+\}|\{\{[^}]+\}\}")
 API_LITERAL = re.compile(r"/api/[A-Za-z0-9_/${}.\-]*")
@@ -394,6 +396,8 @@ class TestContratoUI:
             for ruta in TEMPLATES.glob("*.html")
         }
         fuentes["store.js"] = STORE_JS.read_text(encoding="utf-8")
+        fuentes["landing.html"] = LANDING.read_text(encoding="utf-8")
+        fuentes["landing.js"] = LANDING_JS.read_text(encoding="utf-8")
         return fuentes
 
     def test_todo_endpoint_invocado_por_el_front_existe(self):
